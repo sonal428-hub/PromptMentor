@@ -109,7 +109,7 @@ export default function HomePage() {
             variants={itemVariants}
             className="text-slate-300 text-base sm:text-xl font-normal leading-relaxed max-w-2xl font-sans tracking-wide opacity-90"
           >
-            PromptMentor teaches specificity, context, constraints, and roles in real time — leaving you skilled at prompt engineering on your own over time.
+            PromptMentor teaches specificity, context, constraints, and roles in real time leaving you skilled at prompt engineering on your own over time.
           </motion.p>
 
           <motion.div variants={itemVariants} className="pt-4">
