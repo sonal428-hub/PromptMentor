@@ -2,31 +2,19 @@ import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import HomePage from './pages/HomePage';
+import ImprovePage from './pages/ImprovePage';
 import LearnPage from './pages/LearnPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import ProgressPage from './pages/ProgressPage';
 import EducationalFlashcards from './components/EducationalFlashcards';
 import ApiKeyModal from './components/ApiKeyModal';
-
-import PresetPrompts from './components/PresetPrompts';
-import PromptEditor from './components/PromptEditor';
-import AIGradeScore from './components/AIGradeScore';
-import PromptDiffComparison from './components/PromptDiffComparison';
-import OutputComparison from './components/OutputComparison';
-
-import { analyzePrompt } from './utils/promptAnalyzer';
-import { coaxAnalyze, comparePromptOutputs, generateLLMResponse } from './utils/geminiApi';
+import { coaxAnalyze, comparePromptOutputs } from './utils/geminiApi';
 
 export default function App() {
-  const [userPrompt, setUserPrompt] = useState('help me fix my code error');
+  const [userPrompt, setUserPrompt] = useState('Write a concise email requesting project feedback from my team.');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
-
-  const [activePreset, setActivePreset] = useState(null);
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [rawOutput, setRawOutput] = useState('');
-  const [enhancedOutput, setEnhancedOutput] = useState('');
 
   const [coaxResult, setCoaxResult] = useState(null);
   const [isCoaxing, setIsCoaxing] = useState(false);
@@ -35,23 +23,6 @@ export default function App() {
   const [comparisonResult, setComparisonResult] = useState(null);
   const [isComparing, setIsComparing] = useState(false);
   const [compareError, setCompareError] = useState('');
-
-  const analysis = React.useMemo(() => {
-    return analyzePrompt(userPrompt);
-  }, [userPrompt]);
-
-  const handleSelectPreset = (preset) => {
-    setActivePreset(preset);
-    setUserPrompt(preset.prompt);
-    setRawOutput('');
-    setEnhancedOutput('');
-  };
-
-  const handleApplySuggestedPrompt = () => {
-    if (analysis.suggestedPrompt) {
-      setUserPrompt(analysis.suggestedPrompt);
-    }
-  };
 
   const handleSaveApiKey = (key) => {
     setApiKey(key);
@@ -62,46 +33,17 @@ export default function App() {
     if (!userPrompt.trim()) return;
     setIsCoaxing(true);
     setCoaxError('');
+    setCoaxResult(null);
+    setComparisonResult(null);
 
     try {
       const res = await coaxAnalyze(userPrompt, apiKey);
       setCoaxResult(res);
     } catch (err) {
-      setCoaxError(err.message);
+      setCoaxError(err.message || 'Analysis failed. Please check your Gemini API key.');
+      console.error('Coax API call failed:', err);
     } finally {
       setIsCoaxing(false);
-    }
-  };
-
-  const handleRunComparison = async () => {
-    if (!userPrompt.trim()) return;
-    setIsExecuting(true);
-
-    const mockRaw = activePreset?.prompt === userPrompt ? activePreset.mockRawResponse : '';
-    const mockEnhanced = activePreset?.prompt === userPrompt ? activePreset.mockEnhancedResponse : '';
-
-    try {
-      const [resRaw, resEnhanced] = await Promise.all([
-        generateLLMResponse({
-          prompt: userPrompt,
-          apiKey,
-          isEnhanced: false,
-          mockFallback: mockRaw
-        }),
-        generateLLMResponse({
-          prompt: analysis.suggestedPrompt || userPrompt,
-          apiKey,
-          isEnhanced: true,
-          mockFallback: mockEnhanced
-        })
-      ]);
-
-      setRawOutput(resRaw);
-      setEnhancedOutput(resEnhanced);
-    } catch (err) {
-      console.error('Execution error:', err);
-    } finally {
-      setIsExecuting(false);
     }
   };
 
@@ -114,76 +56,84 @@ export default function App() {
       const res = await comparePromptOutputs(coaxResult.originalPrompt, coaxResult.finalPrompt, apiKey);
       setComparisonResult(res);
     } catch (err) {
-      setCompareError(err.message);
+      setCompareError(err.message || 'Output comparison failed.');
+      console.error('Compare API call failed:', err);
     } finally {
       setIsComparing(false);
     }
   };
 
-  const WorkbenchView = (
-    <div className="w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col justify-between">
-      <div>
-        <PresetPrompts onSelectPreset={handleSelectPreset} />
+  const handleUseSuggestedPrompt = () => {
+    if (coaxResult?.finalPrompt) {
+      setUserPrompt(coaxResult.finalPrompt);
+    }
+  };
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch mb-6">
-          <div className="lg:col-span-1">
-            <PromptEditor
-              userPrompt={userPrompt}
-              onChangePrompt={setUserPrompt}
-              analysis={analysis}
-              onRunComparison={handleRunComparison}
-              isExecuting={isExecuting}
-            />
-          </div>
-
-          <div className="lg:col-span-1">
-            <AIGradeScore analysis={analysis} />
-          </div>
-
-          <div className="lg:col-span-1">
-            <PromptDiffComparison
-              analysis={analysis}
-              onApplySuggestedPrompt={handleApplySuggestedPrompt}
-              onOpenFlashcards={() => setIsFlashcardsOpen(true)}
-            />
-          </div>
-        </div>
-
-        <OutputComparison
-          rawOutput={rawOutput}
-          enhancedOutput={enhancedOutput}
-          isExecuting={isExecuting}
-          userPrompt={userPrompt}
-          suggestedPrompt={analysis.suggestedPrompt}
-          onRunComparison={handleRunComparison}
-        />
-      </div>
-    </div>
-  );
+  const handleDismiss = () => {
+    setCoaxResult(null);
+    setComparisonResult(null);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white font-sans">
       <Header
         apiKey={apiKey}
         onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
       />
 
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full overflow-hidden">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/improve" element={WorkbenchView} />
+          <Route
+            path="/improve"
+            element={
+              <ImprovePage
+                userPrompt={userPrompt}
+                setUserPrompt={setUserPrompt}
+                coaxResult={coaxResult}
+                isCoaxing={isCoaxing}
+                coaxError={coaxError}
+                onCoax={handleCoax}
+                onUseSuggestedPrompt={handleUseSuggestedPrompt}
+                onDismiss={handleDismiss}
+                comparisonResult={comparisonResult}
+                isComparing={isComparing}
+                compareError={compareError}
+                onCompare={handleCompare}
+                apiKey={apiKey}
+              />
+            }
+          />
           <Route path="/learn" element={<LearnPage onOpenFlashcards={() => setIsFlashcardsOpen(true)} />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/progress" element={<ProgressPage coaxResult={coaxResult} />} />
-          <Route path="*" element={<HomePage />} />
+          <Route
+            path="*"
+            element={
+              <ImprovePage
+                userPrompt={userPrompt}
+                setUserPrompt={setUserPrompt}
+                coaxResult={coaxResult}
+                isCoaxing={isCoaxing}
+                coaxError={coaxError}
+                onCoax={handleCoax}
+                onUseSuggestedPrompt={handleUseSuggestedPrompt}
+                onDismiss={handleDismiss}
+                comparisonResult={comparisonResult}
+                isComparing={isComparing}
+                compareError={compareError}
+                onCompare={handleCompare}
+                apiKey={apiKey}
+              />
+            }
+          />
         </Routes>
       </main>
 
       <footer className="w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-gray-400 gap-4">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-300">PromptMentor</span>
-          
         </div>
         <p className="text-gray-400">Designed to educate users through real-time feedback & progressive disclosure.</p>
       </footer>
