@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Target, GraduationCap, LineChart, Home, Sparkles } from 'lucide-react';
+import { BookOpen, Target, GraduationCap, LineChart, Home } from 'lucide-react';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 
 export default function Header({ onOpenFlashcards }) {
@@ -17,22 +17,22 @@ export default function Header({ onOpenFlashcards }) {
   return (
     <header className="w-full border-b border-white/10 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between gap-4 shadow-xl shadow-slate-950/50">
       <Link to="/" className="flex items-center gap-3 group focus:outline-none">
-        <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-violet-500/25 group-hover:scale-105 group-hover:shadow-violet-500/40 transition-all duration-300">
-          <img
-            src="/logo.png"
-            alt="PromptMentor Logo"
-            className="w-full h-full object-cover rounded-[14px] bg-slate-950"
-          />
-          <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-950 rounded-full flex items-center justify-center">
-            <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
+        {/* Logo with ambient glow */}
+        <div className="relative w-9 h-9 flex items-center justify-center">
+          <div className="absolute -inset-1 bg-gradient-to-tr from-violet-600 via-indigo-500 to-emerald-400 rounded-xl blur-md opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
+          <div className="relative w-9 h-9 rounded-xl overflow-hidden ring-1 ring-white/20 group-hover:ring-violet-400/50 bg-slate-950 p-0.5 shadow-inner transition-all duration-300">
+            <img
+              src="/logo.png"
+              alt="PromptMentor Logo"
+              className="w-full h-full object-contain rounded-[10px]"
+            />
           </div>
         </div>
 
-        <div className="flex items-center">
-          <h1 className="text-xl font-black tracking-tight font-heading bg-gradient-to-r from-white via-violet-200 to-indigo-300 bg-clip-text text-transparent group-hover:from-violet-300 group-hover:to-emerald-300 transition-all">
-            PromptMentor
-          </h1>
-        </div>
+        {/* Brand Name */}
+        <h1 className="text-lg sm:text-xl font-black tracking-tight font-heading bg-gradient-to-r from-white via-slate-100 to-violet-300 bg-clip-text text-transparent group-hover:from-violet-200 group-hover:to-emerald-300 transition-all duration-300">
+          PromptMentor
+        </h1>
       </Link>
 
       <nav className="hidden md:flex items-center gap-2">
