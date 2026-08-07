@@ -11,7 +11,7 @@ import ApiKeyModal from './components/ApiKeyModal';
 import { coaxAnalyze, comparePromptOutputs } from './utils/geminiApi';
 
 export default function App() {
-  const [userPrompt, setUserPrompt] = useState('Write a concise email requesting project feedback from my team.');
+  const [userPrompt, setUserPrompt] = useState('');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
