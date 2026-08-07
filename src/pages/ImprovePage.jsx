@@ -206,10 +206,6 @@ export default function ImprovePage({
                   </div>
                 </div>
 
-                {/* Preset Prompts Selector */}
-                <div className="pt-1">
-                  <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
-                </div>
               </div>
             </div>
 
@@ -231,8 +227,9 @@ export default function ImprovePage({
 
           </div>
 
-          {/* Symmetrical Full-Width Textbox Spanning Across Both Columns */}
-          <div className="w-full pt-3 border-t border-white/10">
+          {/* Full-Width Textbox Section: Spanning Symmetrically Across BOTH Left & Right Sections */}
+          <div className="w-full pt-3 border-t border-white/10 space-y-2.5">
+            <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
             <PromptInputBox
               value={userPrompt}
               onValueChange={setUserPrompt}
@@ -241,6 +238,7 @@ export default function ImprovePage({
               }}
               isLoading={isCoaxing}
               placeholder="Type or paste your prompt here to coach & optimize..."
+              className="w-full max-w-none shadow-xl shadow-violet-950/40"
             />
           </div>
 
