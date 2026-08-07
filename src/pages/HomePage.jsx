@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sparkles, Award, Zap, Layers } from 'lucide-react';
 import { ServiceCard } from '@/components/ui/service-card';
 import { GetStartedButton } from '@/components/ui/get-started-button';
+import AnimatedGradientBackground from '@/components/ui/animated-gradient-background';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -47,10 +48,31 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-slate-950 text-gray-100 p-6 lg:p-12 space-y-10 max-w-7xl mx-auto">
+    <div className="relative min-h-[calc(100vh-65px)] bg-slate-950 text-gray-100 p-6 lg:p-12 space-y-10 max-w-7xl mx-auto overflow-hidden">
+
+      {/* Animated Gradient Background */}
+      <AnimatedGradientBackground
+        Breathing={true}
+        animationSpeed={0.03}
+        breathingRange={4}
+        startingGap={120}
+        topOffset={-20}
+        gradientColors={[
+          '#020617',
+          '#1e1b4b',
+          '#4c1d95',
+          '#7c3aed',
+          '#6366f1',
+          '#0ea5e9',
+          '#020617'
+        ]}
+        gradientStops={[20, 35, 50, 60, 70, 80, 100]}
+        containerClassName="pointer-events-none"
+        containerStyle={{ opacity: 0.6 }}
+      />
 
       {/* Hero Section */}
-      <div className="text-center space-y-5 max-w-3xl mx-auto pt-4 flex flex-col items-center">
+      <div className="relative z-10 text-center space-y-5 max-w-3xl mx-auto pt-4 flex flex-col items-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-violet-400 animate-pulse" />
           <span>Real-Time Collaborative Prompt Engineering</span>
@@ -70,7 +92,7 @@ export default function HomePage() {
       </div>
 
       {/* 4 Main Service Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
         {services.map((service) => (
           <ServiceCard
             key={service.title}
@@ -88,7 +110,7 @@ export default function HomePage() {
       </div>
 
       {/* Highlights / Features Banner */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10">
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10">
         <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5 space-y-2">
           <div className="flex items-center gap-2 text-violet-400 font-bold text-xs">
             <Award className="w-4 h-4" />
