@@ -125,7 +125,7 @@ export default function ScoreRightPanel({
           </div>
           <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-semibold flex items-center gap-1.5">
             {isAiScoreLoading && <RefreshCw className="w-3 h-3 animate-spin text-violet-400" />}
-            <span>Evaluated by Gemini AI</span>
+            <span></span>
           </span>
         </div>
 
