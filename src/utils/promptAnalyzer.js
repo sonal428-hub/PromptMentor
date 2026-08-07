@@ -1,13 +1,3 @@
-/**
- * Prompt Analyzer Utility for Collaborative Prompting (PS05)
- * Analyzes prompt text across 5 prompt engineering pillars:
- * 1. Persona / Role
- * 2. Context & Background
- * 3. Specificity & Clarity
- * 4. Constraints & Boundaries
- * 5. Output Format & Structure
- */
-
 export const PROMPT_PILLARS = {
   PERSONA: {
     id: 'persona',
