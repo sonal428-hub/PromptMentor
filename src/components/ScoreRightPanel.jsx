@@ -6,6 +6,7 @@ import PillarHighlightSpan from './PillarHighlightSpan';
 import PenguinMascot from './PenguinMascot';
 
 export default function ScoreRightPanel({
+  userPrompt,
   coaxResult,
   isCoaxing,
   comparisonResult,
@@ -21,8 +22,9 @@ export default function ScoreRightPanel({
   const [copiedFinal, setCopiedFinal] = useState(false);
   const [penguinMode, setPenguinMode] = useState('idle');
 
-  // Real AI score from 2s debounced call (or coaxResult fallback)
-  const displayScore = aiScoreResult?.score ?? coaxResult?.score ?? 0;
+  // Real AI score calculation: force 0 when prompt is empty or blank
+  const isPromptEmpty = !userPrompt || !userPrompt.trim();
+  const displayScore = isPromptEmpty ? 0 : (aiScoreResult?.score ?? (coaxResult?.score || 0));
   const strokeDashoffset = 226 - (226 * Math.min(100, Math.max(0, displayScore))) / 100;
 
   const prevScoreRef = useRef(undefined);
@@ -160,7 +162,9 @@ export default function ScoreRightPanel({
                   : 'Needs Optimization (<50)'}
               </h3>
               <p className="text-xs text-gray-300 leading-relaxed italic line-clamp-2">
-                {isAiScoreLoading ? (
+                {isPromptEmpty ? (
+                  'Type or paste your prompt in the box below to receive real-time AI quality scoring.'
+                ) : isAiScoreLoading ? (
                   <span className="text-violet-300 animate-pulse">Evaluating prompt structure with Gemini AI...</span>
                 ) : (
                   aiScoreResult?.explanation || 'Score updates 2 seconds after typing stops to provide dynamic AI feedback.'

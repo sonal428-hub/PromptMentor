@@ -205,6 +205,7 @@ export default function ImprovePage({
             {/* SECTION 2: AI Score Section (Right Side) */}
             <div className="border-t lg:border-t-0 lg:border-l border-white/10 lg:pl-5 pt-4 lg:pt-0 h-full overflow-hidden">
               <ScoreRightPanel
+                userPrompt={userPrompt}
                 coaxResult={coaxResult}
                 isCoaxing={isCoaxing}
                 comparisonResult={comparisonResult}
