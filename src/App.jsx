@@ -1,15 +1,22 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
+import HomePage from './pages/HomePage';
+import LearnPage from './pages/LearnPage';
+import LeaderboardPage from './pages/LeaderboardPage';
+import ProgressPage from './pages/ProgressPage';
+import EducationalFlashcards from './components/EducationalFlashcards';
+import ApiKeyModal from './components/ApiKeyModal';
+
+// Workbench components
 import PresetPrompts from './components/PresetPrompts';
 import PromptEditor from './components/PromptEditor';
 import AIGradeScore from './components/AIGradeScore';
 import PromptDiffComparison from './components/PromptDiffComparison';
 import OutputComparison from './components/OutputComparison';
-import EducationalFlashcards from './components/EducationalFlashcards';
-import ApiKeyModal from './components/ApiKeyModal';
+
 import { analyzePrompt } from './utils/promptAnalyzer';
-import { generateLLMResponse } from './utils/geminiApi';
-import confetti from 'canvas-confetti';
+import { coaxAnalyze, comparePromptOutputs, generateLLMResponse } from './utils/geminiApi';
 
 export default function App() {
   const [userPrompt, setUserPrompt] = useState('help me fix my code error');
@@ -18,24 +25,23 @@ export default function App() {
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
 
   const [activePreset, setActivePreset] = useState(null);
-
   const [isExecuting, setIsExecuting] = useState(false);
   const [rawOutput, setRawOutput] = useState('');
   const [enhancedOutput, setEnhancedOutput] = useState('');
 
-  const analysis = useMemo(() => {
+  // API Call 1 state
+  const [coaxResult, setCoaxResult] = useState(null);
+  const [isCoaxing, setIsCoaxing] = useState(false);
+  const [coaxError, setCoaxError] = useState('');
+
+  // API Call 2 state
+  const [comparisonResult, setComparisonResult] = useState(null);
+  const [isComparing, setIsComparing] = useState(false);
+  const [compareError, setCompareError] = useState('');
+
+  const analysis = React.useMemo(() => {
     return analyzePrompt(userPrompt);
   }, [userPrompt]);
-
-  useEffect(() => {
-    if (analysis.overallScore === 100) {
-      confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    }
-  }, [analysis.overallScore]);
 
   const handleSelectPreset = (preset) => {
     setActivePreset(preset);
@@ -55,7 +61,23 @@ export default function App() {
     localStorage.setItem('gemini_api_key', key);
   };
 
-  // Run Dual LLM Output Comparison
+  // Coax button handler (API Call 1)
+  const handleCoax = async () => {
+    if (!userPrompt.trim()) return;
+    setIsCoaxing(true);
+    setCoaxError('');
+
+    try {
+      const res = await coaxAnalyze(userPrompt, apiKey);
+      setCoaxResult(res);
+    } catch (err) {
+      setCoaxError(err.message);
+    } finally {
+      setIsCoaxing(false);
+    }
+  };
+
+  // Dual LLM comparison handler (API Call 2)
   const handleRunComparison = async () => {
     if (!userPrompt.trim()) return;
     setIsExecuting(true);
@@ -88,6 +110,63 @@ export default function App() {
     }
   };
 
+  const handleCompare = async () => {
+    if (!coaxResult?.finalPrompt) return;
+    setIsComparing(true);
+    setCompareError('');
+
+    try {
+      const res = await comparePromptOutputs(coaxResult.originalPrompt, coaxResult.finalPrompt, apiKey);
+      setComparisonResult(res);
+    } catch (err) {
+      setCompareError(err.message);
+    } finally {
+      setIsComparing(false);
+    }
+  };
+
+  // Workbench view component
+  const WorkbenchView = (
+    <div className="w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col justify-between">
+      <div>
+        <PresetPrompts onSelectPreset={handleSelectPreset} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch mb-6">
+          <div className="lg:col-span-1">
+            <PromptEditor
+              userPrompt={userPrompt}
+              onChangePrompt={setUserPrompt}
+              analysis={analysis}
+              onRunComparison={handleRunComparison}
+              isExecuting={isExecuting}
+            />
+          </div>
+
+          <div className="lg:col-span-1">
+            <AIGradeScore analysis={analysis} />
+          </div>
+
+          <div className="lg:col-span-1">
+            <PromptDiffComparison
+              analysis={analysis}
+              onApplySuggestedPrompt={handleApplySuggestedPrompt}
+              onOpenFlashcards={() => setIsFlashcardsOpen(true)}
+            />
+          </div>
+        </div>
+
+        <OutputComparison
+          rawOutput={rawOutput}
+          enhancedOutput={enhancedOutput}
+          isExecuting={isExecuting}
+          userPrompt={userPrompt}
+          suggestedPrompt={analysis.suggestedPrompt}
+          onRunComparison={handleRunComparison}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white">
       {/* Top Header */}
@@ -97,60 +176,26 @@ export default function App() {
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col justify-between">
-        <div>
-          {/* Quick Presets row */}
-          <PresetPrompts onSelectPreset={handleSelectPreset} />
-
-          {/* 3-Column Core Workbench (Modules 2, 3, 4) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch mb-6">
-            {/* Module 2: Prompt Editor Space & Progressive Disclosure */}
-            <div className="lg:col-span-1">
-              <PromptEditor
-                userPrompt={userPrompt}
-                onChangePrompt={setUserPrompt}
-                analysis={analysis}
-                onRunComparison={handleRunComparison}
-                isExecuting={isExecuting}
-              />
-            </div>
-
-            {/* Module 3: AI Grade Score Gauge */}
-            <div className="lg:col-span-1">
-              <AIGradeScore analysis={analysis} />
-            </div>
-
-            {/* Module 4: Suggestion Comparison & Diff Badges */}
-            <div className="lg:col-span-1">
-              <PromptDiffComparison
-                analysis={analysis}
-                onApplySuggestedPrompt={handleApplySuggestedPrompt}
-                onOpenFlashcards={() => setIsFlashcardsOpen(true)}
-              />
-            </div>
-          </div>
-
-          {/* Module 1: Prompt's Actual Output Dual Workbench */}
-          <OutputComparison
-            rawOutput={rawOutput}
-            enhancedOutput={enhancedOutput}
-            isExecuting={isExecuting}
-            userPrompt={userPrompt}
-            suggestedPrompt={analysis.suggestedPrompt}
-            onRunComparison={handleRunComparison}
-          />
-        </div>
-
-        {/* Footer */}
-        <footer className="w-full mt-12 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-gray-400 gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-gray-300">PromptMentor</span>
-            <span>• PS05 Collaborative Prompting Hackathon Edition</span>
-          </div>
-          <p className="text-gray-400">Designed to educate users through real-time feedback & progressive disclosure.</p>
-        </footer>
+      {/* Page Routes */}
+      <main className="flex-1 w-full">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/improve" element={WorkbenchView} />
+          <Route path="/learn" element={<LearnPage onOpenFlashcards={() => setIsFlashcardsOpen(true)} />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/progress" element={<ProgressPage coaxResult={coaxResult} />} />
+          <Route path="*" element={<HomePage />} />
+        </Routes>
       </main>
+
+      {/* Footer */}
+      <footer className="w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-gray-400 gap-4">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-gray-300">PromptMentor</span>
+          <span>• PS05 Collaborative Prompting</span>
+        </div>
+        <p className="text-gray-400">Designed to educate users through real-time feedback & progressive disclosure.</p>
+      </footer>
 
       {/* Modals */}
       <EducationalFlashcards
