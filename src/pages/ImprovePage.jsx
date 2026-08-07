@@ -125,20 +125,20 @@ export default function ImprovePage({
   };
 
   return (
-    <div className="h-[calc(100vh-65px)] bg-slate-950 p-3 sm:p-4 lg:p-5 flex flex-col justify-between overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full h-full flex flex-col justify-between">
+    <div className="h-[calc(100vh-65px)] bg-slate-950 p-2 sm:p-3 lg:p-4 flex flex-col justify-between overflow-hidden">
+      <div className="max-w-[1400px] mx-auto w-full h-full flex flex-col justify-between">
         
-        {/* Main Glass Dashboard Box - Scaled Up */}
-        <div className="h-full flex-1 glass-panel p-4 sm:p-6 border-violet-500/20 shadow-2xl rounded-3xl bg-slate-900/50 backdrop-blur-xl flex flex-col justify-between gap-5 overflow-hidden">
+        {/* Main Glass Dashboard Box - Expanded & Optimized */}
+        <div className="h-full flex-1 glass-panel p-3.5 sm:p-4.5 border-violet-500/20 shadow-2xl rounded-3xl bg-slate-900/50 backdrop-blur-xl flex flex-col justify-between gap-3.5 overflow-hidden">
           
-          {/* Top Grid: Left (Realtime Score) & Right (AI Score) - Completely Symmetrical */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0 overflow-hidden">
+          {/* Top Grid: Left (Realtime Score) & Right (AI Score) - Symmetrical & Expanded */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0 overflow-hidden">
             
             {/* SECTION 1: Realtime Score (Left Side) */}
             <div className="space-y-3 flex flex-col justify-between h-full overflow-hidden">
               
               {/* Card 1: Realtime Score Meter */}
-              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-white/5 space-y-3 shadow-inner">
+              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-white/5 space-y-2.5 shadow-inner">
                 <div className="flex items-center justify-between pb-2 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -203,7 +203,7 @@ export default function ImprovePage({
             </div>
 
             {/* SECTION 2: AI Score Section (Right Side) */}
-            <div className="border-t lg:border-t-0 lg:border-l border-white/10 lg:pl-5 pt-4 lg:pt-0 h-full overflow-hidden">
+            <div className="border-t lg:border-t-0 lg:border-l border-white/10 lg:pl-4 pt-3 lg:pt-0 h-full overflow-hidden">
               <ScoreRightPanel
                 userPrompt={userPrompt}
                 coaxResult={coaxResult}
@@ -222,7 +222,7 @@ export default function ImprovePage({
           </div>
 
           {/* Full-Width Textbox Section: Spanning Symmetrically Across BOTH Left & Right Sections */}
-          <div className="w-full pt-3 border-t border-white/10 space-y-2.5">
+          <div className="w-full pt-2.5 border-t border-white/10 space-y-2">
             <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
             <PromptInputBox
               value={userPrompt}
