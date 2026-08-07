@@ -776,22 +776,42 @@ function QuizModal({ lesson, onClose, onLessonCompleted, onQuestionSolved }) {
   const isLastQuestion = questionIndex === totalQuestions - 1;
   const isCorrect = submitted && selected === question.correctIndex;
 
+  // const handleSubmit = () => {
+  //   if (selected === null) return;
+  //   setSubmitted(true);
+  //   if (selected === question.correctIndex) {
+  //     onQuestionSolved(lesson.id, questionIndex);
+  //   }
+  // };
   const handleSubmit = () => {
     if (selected === null) return;
     setSubmitted(true);
     if (selected === question.correctIndex) {
       onQuestionSolved(lesson.id, questionIndex);
+      // Unlock the lesson immediately on correct final submission
+      if (isLastQuestion) {
+        onLessonCompleted(lesson.id);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 2200);
+      }
     }
   };
 
+  // const handleNext = () => {
+  //   if (!isCorrect) return; // must answer correctly to advance
+  //   if (isLastQuestion) {
+  //     onLessonCompleted(lesson.id);
+  //     setShowConfetti(true);
+  //     setTimeout(() => setShowConfetti(false), 2200);
+  //     return;
+  //   }
+  //   setQuestionIndex((i) => i + 1);
+  //   setSelected(null);
+  //   setSubmitted(false);
+  // };
+
   const handleNext = () => {
     if (!isCorrect) return; // must answer correctly to advance
-    if (isLastQuestion) {
-      onLessonCompleted(lesson.id);
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 2200);
-      return;
-    }
     setQuestionIndex((i) => i + 1);
     setSelected(null);
     setSubmitted(false);
@@ -1133,7 +1153,10 @@ export default function LearnPage() {
   const openLearnMore = (lesson) => setLearnMoreLesson(lesson);
   const openQuiz = (lesson) => {
     setLearnMoreLesson(null);
-    setQuizLesson(lesson);
+    // setQuizLesson(lesson);
+    setTimeout(() => {
+      setQuizLesson(lesson);
+    }, 0);
   };
 
   return (
