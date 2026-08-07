@@ -22,9 +22,10 @@ export default function ScoreRightPanel({
   const [copiedFinal, setCopiedFinal] = useState(false);
   const [penguinMode, setPenguinMode] = useState('idle');
 
-  // Real AI score calculation: force 0 when prompt is empty or blank
+  // Real AI score calculation: ONLY display AI score when explicitly submitted & evaluated
   const isPromptEmpty = !userPrompt || !userPrompt.trim();
-  const displayScore = isPromptEmpty ? 0 : (aiScoreResult?.score ?? (coaxResult?.score || 0));
+  const isSubmitted = !!aiScoreResult;
+  const displayScore = (isPromptEmpty || !isSubmitted) ? 0 : (aiScoreResult.score ?? 0);
   const strokeDashoffset = 226 - (226 * Math.min(100, Math.max(0, displayScore))) / 100;
 
   const prevScoreRef = useRef(undefined);
@@ -162,12 +163,12 @@ export default function ScoreRightPanel({
                   : 'Needs Optimization (<50)'}
               </h3>
               <p className="text-xs text-gray-300 leading-relaxed italic line-clamp-2">
-                {isPromptEmpty ? (
-                  'Type or paste your prompt in the box below to receive real-time AI quality scoring.'
+                {isPromptEmpty || !isSubmitted ? (
+                  'Click the submit arrow button below to calculate your AI Quality Score.'
                 ) : isAiScoreLoading ? (
                   <span className="text-violet-300 animate-pulse">Evaluating prompt structure with Gemini AI...</span>
                 ) : (
-                  aiScoreResult?.explanation || 'Score updates 2 seconds after typing stops to provide dynamic AI feedback.'
+                  aiScoreResult?.explanation || 'Score evaluated.'
                 )}
               </p>
             </div>

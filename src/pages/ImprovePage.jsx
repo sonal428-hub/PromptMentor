@@ -57,40 +57,29 @@ export default function ImprovePage({
     return `To improve quality, consider specifying ${missing.map(p => p.title).join(' and ')}.`;
   })();
 
-  // Debounced real AI score calculation
-  useEffect(() => {
-    if (!userPrompt || !userPrompt.trim()) {
-      setAiScoreResult(null);
-      setIsAiScoreLoading(false);
-      return;
-    }
+  // Reset AI score state when prompt text is edited prior to submit
+  const handleUserPromptChange = (newVal) => {
+    setUserPrompt(newVal);
+    setAiScoreResult(null);
+  };
+
+  // Evaluate AI Score ONLY when the user explicitly clicks submit/send
+  const handlePromptSubmit = async (submittedText) => {
+    const textToEvaluate = submittedText || userPrompt;
+    if (!textToEvaluate || !textToEvaluate.trim()) return;
 
     setIsAiScoreLoading(true);
-    let isAborted = false;
-
-    const timer = setTimeout(async () => {
-      try {
-        const res = await evaluateAiScore(userPrompt, apiKey);
-        if (!isAborted) {
-          setAiScoreResult(res);
-          setAiScoreError('');
-        }
-      } catch (err) {
-        if (!isAborted) {
-          setAiScoreError(err.message || 'AI Score calculation failed');
-        }
-      } finally {
-        if (!isAborted) {
-          setIsAiScoreLoading(false);
-        }
-      }
-    }, 2000);
-
-    return () => {
-      isAborted = true;
-      clearTimeout(timer);
-    };
-  }, [userPrompt, apiKey]);
+    setAiScoreError('');
+    try {
+      const res = await evaluateAiScore(textToEvaluate, apiKey);
+      setAiScoreResult(res);
+      if (onCoax) onCoax();
+    } catch (err) {
+      setAiScoreError(err.message || 'AI Score calculation failed');
+    } finally {
+      setIsAiScoreLoading(false);
+    }
+  };
 
   const openModal = (type) => {
     setModalType(type);
@@ -223,15 +212,13 @@ export default function ImprovePage({
 
           {/* Full-Width Textbox Section: Spanning Symmetrically Across BOTH Left & Right Sections */}
           <div className="w-full pt-2.5 border-t border-white/10 space-y-2">
-            <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
+            <PresetPrompts onSelectPreset={(text) => handleUserPromptChange(text)} />
             <PromptInputBox
               value={userPrompt}
-              onValueChange={setUserPrompt}
-              onSend={() => {
-                if (onCoax) onCoax();
-              }}
-              isLoading={isCoaxing}
-              placeholder="Type or paste your prompt here to coach & optimize..."
+              onValueChange={handleUserPromptChange}
+              onSend={(text) => handlePromptSubmit(text)}
+              isLoading={isAiScoreLoading || isCoaxing}
+              placeholder="Type or paste your prompt here and click the arrow button to evaluate..."
               className="w-full max-w-none shadow-xl shadow-violet-950/40"
             />
           </div>
