@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Award, Zap, Layers } from 'lucide-react';
 import { ServiceCard } from '@/components/ui/service-card';
+import { GetStartedButton } from '@/components/ui/get-started-button';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function HomePage() {
     {
       title: "Prompt Improve",
       href: "/improve",
-      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-DFiJBJyUFg9QYTZOWEFeeza18HBnty.png&w=320&q=75",
+      imgSrc: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=320&q=75",
       imgAlt: "AI Prompt Workbench Illustration",
       variant: "purple",
       badge: "Main Feature",
@@ -19,8 +20,8 @@ export default function HomePage() {
     {
       title: "Learn Prompting",
       href: "/learn",
-      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-SxvnIpN2RVwLK77XxK3MnVCU6Xgc29.png&w=320&q=75",
-      imgAlt: "Paint bucket illustration",
+      imgSrc: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=320&q=75",
+      imgAlt: "Interactive learning illustration",
       variant: "blue",
       badge: "Interactive Modules",
       description: "Master prompt engineering fundamentals through step-by-step interactive flashcards, progressive disclosure cards, and real-world prompt examples."
@@ -28,8 +29,8 @@ export default function HomePage() {
     {
       title: "Leaderboard",
       href: "/leaderboard",
-      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-J7XYh5Cix5CceVeAtkuVXYSGgrhjDL.png&w=320&q=75",
-      imgAlt: "Megaphone illustration",
+      imgSrc: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=320&q=75",
+      imgAlt: "Community showcase illustration",
       variant: "gray",
       badge: "Community",
       description: "Explore high-scoring prompts crafted by the community, categorized by domain, quality score, and precision benchmarks."
@@ -37,8 +38,8 @@ export default function HomePage() {
     {
       title: "Track Progress",
       href: "/progress",
-      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-nY3Stc1545aP21dAi1IEbYlnc4rovS.png&w=320&q=75",
-      imgAlt: "Notebook and pen illustration",
+      imgSrc: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=320&q=75",
+      imgAlt: "Analytics dashboard illustration",
       variant: "emerald",
       badge: "Analytics",
       description: "Review your personal prompt improvement radar, historical score deltas, specificity metrics, and shareable prompt glow-up cards."
@@ -49,7 +50,7 @@ export default function HomePage() {
     <div className="min-h-[calc(100vh-65px)] bg-slate-950 text-gray-100 p-6 lg:p-12 space-y-10 max-w-7xl mx-auto">
 
       {/* Hero Section */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto pt-4">
+      <div className="text-center space-y-5 max-w-3xl mx-auto pt-4 flex flex-col items-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-violet-400 animate-pulse" />
           <span>Real-Time Collaborative Prompt Engineering</span>
@@ -62,9 +63,13 @@ export default function HomePage() {
         <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
           PromptMentor teaches specificity, context, constraints, and roles in real time — leaving you skilled at prompt engineering on your own over time, rather than hiding fixes behind the scenes.
         </p>
+
+        <div className="pt-3">
+          <GetStartedButton onClick={() => navigate('/improve')} />
+        </div>
       </div>
 
-      {/* 4 Main Service Cards Grid with Framer Motion animations */}
+      {/* 4 Main Service Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
         {services.map((service) => (
           <ServiceCard
