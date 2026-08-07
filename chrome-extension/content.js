@@ -114,6 +114,8 @@
     return 'Needs Work';
   }
 
+  let hoverTimer = null;
+
   function createFAB() {
     if (fab) return;
     fab = document.createElement('div');
@@ -140,6 +142,25 @@
     `;
 
     setupDragging(fab);
+
+    function keepHover() {
+      if (hoverTimer) {
+        clearTimeout(hoverTimer);
+        hoverTimer = null;
+      }
+      fab.classList.add('pm-hover-active');
+    }
+
+    function scheduleLeave() {
+      if (hoverTimer) clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => {
+        fab.classList.remove('pm-hover-active');
+        hoverTimer = null;
+      }, 1000);
+    }
+
+    fab.addEventListener('mouseenter', keepHover);
+    fab.addEventListener('mouseleave', scheduleLeave);
 
     fab.addEventListener('click', (e) => {
       if (dragHasMoved) return;
