@@ -29,11 +29,10 @@ export default function Header({ apiKey, onOpenApiKeyModal, onOpenFlashcards }) 
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center">
           <h1 className="text-xl font-black tracking-tight font-heading bg-gradient-to-r from-white via-violet-200 to-indigo-300 bg-clip-text text-transparent group-hover:from-violet-300 group-hover:to-emerald-300 transition-all">
             PromptMentor
           </h1>
-          <Sparkles className="w-4 h-4 text-violet-400 group-hover:rotate-12 transition-transform" />
         </div>
       </Link>
 
