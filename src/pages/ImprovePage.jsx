@@ -167,37 +167,6 @@ export default function ImprovePage({
                 </div>
               </div>
 
-              {/* Concept & Engineering Checklist (Horizontal, 3 points per line) */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-gray-300 uppercase tracking-wider font-heading">
-                    Concept & Engineering Checklist
-                  </h3>
-                  <span className="text-[11px] text-gray-400">
-                    {checklistItems.filter(i => i.pass).length} / 6 Met
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  {checklistItems.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition-all ${
-                        item.pass
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                          : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                      }`}
-                    >
-                      {item.pass ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                      ) : (
-                        <XCircle className="w-4 h-4 text-rose-400 flex-shrink-0" />
-                      )}
-                      <span className="truncate">{item.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* Live Coach's Advice with 2 Popup Buttons at Bottom */}
               <div className="p-4 rounded-2xl bg-slate-950/90 border border-violet-500/20 space-y-4 shadow-lg">
                 <div className="flex items-center gap-2 text-violet-300 font-bold text-xs uppercase tracking-wider">
@@ -226,6 +195,24 @@ export default function ImprovePage({
                   </button>
                 </div>
               </div>
+
+              {/* Preset Prompts Quick Selector */}
+              <div className="pt-2">
+                <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
+              </div>
+
+              {/* Prompt Input Box at the end of Left Hand Side Section */}
+              <div className="pt-2">
+                <PromptInputBox
+                  value={userPrompt}
+                  onValueChange={setUserPrompt}
+                  onSend={() => {
+                    if (onCoax) onCoax();
+                  }}
+                  isLoading={isCoaxing}
+                  placeholder="Type or paste your prompt here to coach & optimize..."
+                />
+              </div>
             </div>
           </div>
 
@@ -245,25 +232,6 @@ export default function ImprovePage({
           </div>
 
         </div>
-
-        {/* Preset Prompts Selector */}
-        <div className="max-w-4xl mx-auto">
-          <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
-        </div>
-
-        {/* Bottom AI Prompt Input Search Box */}
-        <div className="max-w-4xl mx-auto w-full pt-2">
-          <PromptInputBox
-            value={userPrompt}
-            onValueChange={setUserPrompt}
-            onSend={() => {
-              if (onCoax) onCoax();
-            }}
-            isLoading={isCoaxing}
-            placeholder="Type or paste your prompt here to coach & optimize..."
-          />
-        </div>
-
       </div>
 
       {/* Popup Dialog Window */}
