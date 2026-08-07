@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Award, Zap, Copy, Check, Play, RefreshCw, Sparkles, FileText, ArrowRight, ShieldCheck, HelpCircle } from 'lucide-react';
+import { Award, Zap, Copy, Check, Play, RefreshCw, Sparkles, FileText } from 'lucide-react';
 import { PROMPT_PILLARS } from '../utils/promptAnalyzer';
 
 export default function ScoreRightPanel({
@@ -14,16 +14,13 @@ export default function ScoreRightPanel({
   const [copiedFinal, setCopiedFinal] = useState(false);
 
   const score = coaxResult?.score ?? 0;
-
-  // Calculate stroke dashoffset for radial SVG gauge (r=36, circumference=226)
   const strokeDashoffset = 226 - (226 * Math.min(100, Math.max(0, score))) / 100;
 
-  // Score color gradient based on value out of 100
   const getScoreColor = (val) => {
-    if (val >= 85) return '#10b981'; // Emerald
-    if (val >= 70) return '#8b5cf6'; // Violet
-    if (val >= 50) return '#f59e0b'; // Amber
-    return '#ef4444'; // Red
+    if (val >= 85) return '#10b981';
+    if (val >= 70) return '#8b5cf6';
+    if (val >= 50) return '#f59e0b';
+    return '#ef4444';
   };
 
   const scoreColor = getScoreColor(score);
@@ -42,10 +39,6 @@ export default function ScoreRightPanel({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto p-4 lg:p-6 space-y-5 bg-slate-950/20">
-
-      {/* ─────────────────────────────────────────────────────────────────
-          PROMINENT AI SCORE CARD (0–100) — NO GRADE CARD
-         ───────────────────────────────────────────────────────────────── */}
       <div className="glass-panel p-5 space-y-4 border-violet-500/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -59,7 +52,6 @@ export default function ScoreRightPanel({
           </span>
         </div>
 
-        {/* Big Radial Score Display */}
         <div className="flex items-center gap-5 p-4 rounded-xl bg-slate-950/80 border border-white/5">
           <div className="relative w-24 h-24 flex items-center justify-center flex-shrink-0">
             <svg className="w-24 h-24 meter-svg" viewBox="0 0 80 80">
@@ -112,13 +104,11 @@ export default function ScoreRightPanel({
           </div>
         </div>
 
-        {/* 5-Pillar Score Breakdown */}
         <div className="space-y-2.5 pt-2">
           <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
             Pillar Breakdown Estimate
           </h4>
           {Object.entries(PROMPT_PILLARS).map(([key, pillar]) => {
-            // Estimate pillar coverage based on overall score or tags
             const tagMatch = coaxResult?.tags?.find(t => t.label.toLowerCase().includes(pillar.id));
             const pillarVal = coaxResult
               ? tagMatch?.status === 'pass'
@@ -153,10 +143,6 @@ export default function ScoreRightPanel({
         </div>
       </div>
 
-
-      {/* ─────────────────────────────────────────────────────────────────
-          ORIGINAL PROMPT VS FINAL PROMPT COMPARISON CARDS
-         ───────────────────────────────────────────────────────────────── */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
@@ -167,7 +153,6 @@ export default function ScoreRightPanel({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Original Prompt Card */}
           <div className="glass-panel p-4 flex flex-col justify-between space-y-3 border-slate-800">
             <div>
               <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
@@ -182,13 +167,12 @@ export default function ScoreRightPanel({
                 </button>
               </div>
               <p className="text-xs text-gray-300 leading-relaxed font-sans min-h-[90px] whitespace-pre-wrap">
-                {coaxResult?.originalPrompt || 'Your draft prompt will appear here after clicking Coax.'}
+                {coaxResult?.originalPrompt || 'Your draft prompt will appear here after clicking submit.'}
               </p>
             </div>
             <div className="text-[10px] text-gray-500 font-mono">User Submission</div>
           </div>
 
-          {/* Final Prompt Card (AI Auto-Gen) */}
           <div className="glass-panel-glow p-4 flex flex-col justify-between space-y-3 border-violet-500/30">
             <div>
               <div className="flex items-center justify-between border-b border-violet-500/20 pb-2 mb-2">
@@ -219,10 +203,6 @@ export default function ScoreRightPanel({
         </div>
       </div>
 
-
-      {/* ─────────────────────────────────────────────────────────────────
-          COMPARE ACTION & LIVE LLM OUTPUT COMPARISON
-         ───────────────────────────────────────────────────────────────── */}
       <div className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
@@ -231,7 +211,6 @@ export default function ScoreRightPanel({
           </h3>
         </div>
 
-        {/* Trigger Compare Action */}
         <button
           onClick={onCompare}
           disabled={!coaxResult || isComparing}
@@ -256,11 +235,9 @@ export default function ScoreRightPanel({
           </div>
         )}
 
-        {/* Dual LLM Outputs Display */}
         {comparisonResult && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Original Output */}
               <div className="glass-panel p-4 space-y-2 border-rose-500/30 bg-slate-950/80">
                 <div className="flex items-center justify-between border-b border-rose-500/20 pb-2">
                   <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
@@ -273,7 +250,6 @@ export default function ScoreRightPanel({
                 </div>
               </div>
 
-              {/* Final Output */}
               <div className="glass-panel-glow p-4 space-y-2 border-emerald-500/40 bg-slate-950/90">
                 <div className="flex items-center justify-between border-b border-emerald-500/20 pb-2">
                   <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
@@ -287,7 +263,6 @@ export default function ScoreRightPanel({
               </div>
             </div>
 
-            {/* AI COMPARISON EXPLANATION CARD (Requirement 5) */}
             {comparisonResult.comparisonExplanation && (
               <div className="p-4 rounded-xl bg-gradient-to-r from-violet-950/60 via-slate-900/90 to-indigo-950/60 border border-violet-500/40 space-y-2">
                 <div className="flex items-center gap-2 border-b border-violet-500/20 pb-2">
@@ -304,7 +279,6 @@ export default function ScoreRightPanel({
           </div>
         )}
       </div>
-
     </div>
   );
 }
