@@ -1,0 +1,242 @@
+/* PromptMentor Extension Popup Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 320px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.pm-popup {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.pm-popup-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+}
+.pm-popup-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pm-popup-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 2px solid rgba(124, 58, 237, 0.4);
+}
+.pm-popup-title {
+  font-size: 16px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #e2e8f0, #a78bfa, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.3px;
+}
+.pm-popup-subtitle {
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+/* Body */
+.pm-popup-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Status */
+.pm-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px;
+}
+.pm-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  transition: background 0.3s;
+}
+.pm-status-dot.pm-active {
+  background: #10b981;
+  animation: pm-pulse 2s ease-in-out infinite;
+}
+@keyframes pm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.pm-status-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* Field */
+.pm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pm-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #a78bfa;
+}
+.pm-input-group {
+  display: flex;
+  gap: 6px;
+}
+.pm-input {
+  flex: 1;
+  padding: 9px 12px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.pm-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+.pm-input::placeholder {
+  color: #475569;
+}
+.pm-eye-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  width: 36px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.pm-eye-btn:hover {
+  background: rgba(255,255,255,0.12);
+}
+.pm-hint {
+  font-size: 10px;
+  color: #64748b;
+}
+.pm-hint a {
+  color: #818cf8;
+  text-decoration: none;
+}
+.pm-hint a:hover {
+  text-decoration: underline;
+}
+
+/* Actions */
+.pm-actions {
+  display: flex;
+  gap: 8px;
+}
+.pm-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.pm-btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  color: white;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+}
+.pm-btn-primary:hover {
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.5);
+  transform: translateY(-1px);
+}
+.pm-btn-danger {
+  background: rgba(244, 63, 94, 0.12);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.25);
+}
+.pm-btn-danger:hover {
+  background: rgba(244, 63, 94, 0.2);
+}
+
+/* Message */
+.pm-message {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  min-height: 16px;
+  transition: opacity 0.2s;
+}
+.pm-message.pm-success {
+  color: #6ee7b7;
+}
+.pm-message.pm-error {
+  color: #fda4af;
+}
+
+/* Divider */
+.pm-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Guide */
+.pm-guide-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+.pm-guide-list {
+  padding-left: 18px;
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.7;
+}
+.pm-guide-list strong {
+  color: #a78bfa;
+}
+
+/* Footer */
+.pm-popup-footer {
+  padding: 10px 16px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+}
+.pm-popup-footer a {
+  font-size: 11px;
+  color: #818cf8;
+  text-decoration: none;
+  font-weight: 600;
+}
+.pm-popup-footer a:hover {
+  text-decoration: underline;
+}

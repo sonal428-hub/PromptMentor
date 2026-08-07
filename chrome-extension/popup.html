@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptMentor Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="pm-popup">
+    <div class="pm-popup-header">
+      <div class="pm-popup-brand">
+        <img src="icons/icon48.png" alt="PromptMentor" class="pm-popup-logo">
+        <div>
+          <h1 class="pm-popup-title">PromptMentor</h1>
+          <p class="pm-popup-subtitle">AI Prompt Coach Extension</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pm-popup-body">
+      <div class="pm-status" id="pm-status">
+        <span class="pm-status-dot" id="pm-status-dot"></span>
+        <span class="pm-status-text" id="pm-status-text">Checking...</span>
+      </div>
+
+      <div class="pm-field">
+        <label class="pm-label" for="pm-api-key">Gemini API Key</label>
+        <div class="pm-input-group">
+          <input
+            type="password"
+            id="pm-api-key"
+            class="pm-input"
+            placeholder="Enter your Gemini API key"
+            autocomplete="off"
+          >
+          <button id="pm-toggle-vis" class="pm-eye-btn" title="Toggle visibility">👁️</button>
+        </div>
+        <p class="pm-hint">Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a></p>
+      </div>
+
+      <div class="pm-actions">
+        <button id="pm-save" class="pm-btn pm-btn-primary">Save Key</button>
+        <button id="pm-clear" class="pm-btn pm-btn-danger">Clear</button>
+      </div>
+
+      <div class="pm-message" id="pm-message"></div>
+
+      <div class="pm-divider"></div>
+
+      <div class="pm-guide">
+        <h3 class="pm-guide-title">How to use</h3>
+        <ol class="pm-guide-list">
+          <li>Go to <strong>ChatGPT</strong>, <strong>Claude</strong>, or <strong>Gemini</strong></li>
+          <li>Type your prompt in the chat input</li>
+          <li>Click the floating <strong>★ PromptMentor</strong> button</li>
+          <li>Get your score, advice & refined prompt</li>
+          <li>Click <strong>"Use Refined Prompt"</strong> to replace your draft</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="pm-popup-footer">
+      <a href="https://github.com/sonal428-hub/PromptMentor" target="_blank">View Full Web App →</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
