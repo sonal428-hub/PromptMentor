@@ -146,8 +146,24 @@ export function analyzePrompt(userPrompt) {
   const lower = text.toLowerCase();
   const words = text ? text.split(/\s+/).filter(Boolean) : [];
 
-  if (words.length === 0) {
-    return createEmptyAnalysis();
+  if (words.length < 2 || text.length < 4) {
+    const calcScore = Math.min(10, Math.max(2, text.length * 3));
+    return {
+      userPrompt: text,
+      wordCount: words.length,
+      overallScore: calcScore,
+      tier: { label: 'Incomplete Prompt', color: '#ef4444', badge: 'Too Short' },
+      scores: { persona: 0, context: 0, specificity: 0, constraints: 0, format: 0 },
+      statusFlags: {
+        hasPersona: false,
+        hasContext: false,
+        hasSpecificity: false,
+        hasConstraints: false,
+        hasFormat: false
+      },
+      missingPillars: Object.values(PROMPT_PILLARS),
+      suggestedPrompt: text ? `Act as a Domain Specialist. Please clarify your request for "${text}" by specifying your target topic, background context, and desired output format.` : ''
+    };
   }
 
   // 1. Persona Detection
@@ -184,12 +200,12 @@ export function analyzePrompt(userPrompt) {
   ];
   const hasFormat = formatPatterns.some(p => p.test(text));
 
-  // Calculate pillar scores (0 - 100)
-  const scorePersona = hasPersona ? 100 : 15;
-  const scoreContext = hasContext ? 100 : (words.length > 10 ? 45 : 20);
-  const scoreSpecificity = hasSpecificity ? 100 : (words.length > 8 ? 60 : 25);
-  const scoreConstraints = hasConstraints ? 100 : 20;
-  const scoreFormat = hasFormat ? 100 : 25;
+  // Calculate pillar scores (0 - 100) — Strict & Fair evaluation
+  const scorePersona = hasPersona ? 100 : 0;
+  const scoreContext = hasContext ? 100 : (words.length > 15 ? 40 : words.length > 6 ? 15 : 0);
+  const scoreSpecificity = hasSpecificity ? 100 : (words.length > 12 ? 50 : words.length > 5 ? 15 : 0);
+  const scoreConstraints = hasConstraints ? 100 : 0;
+  const scoreFormat = hasFormat ? 100 : 0;
 
   // Overall Score (Weighted)
   const overallScore = Math.round(

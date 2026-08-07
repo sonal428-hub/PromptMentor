@@ -52,6 +52,19 @@ async function callGemini(prompt, apiKeyOverride) {
  * 3. Single, clean, professionally rewritten prompt (finalPrompt) with ZERO template concatenation
  */
 export async function evaluateAiScore(userPrompt, apiKey) {
+  const trimmed = (userPrompt || '').trim();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+
+  // Immediate strict guard for single letters or incomplete prompts (e.g. 'a', 'hi')
+  if (trimmed.length < 4 || words.length < 2) {
+    const calcScore = Math.min(10, Math.max(2, trimmed.length * 3));
+    return {
+      score: calcScore,
+      explanation: `Your prompt "${trimmed}" is incomplete (${words.length === 0 ? '0 words' : '1 word'}) and lacks clear intent, context, role framing, or output constraints.`,
+      finalPrompt: trimmed ? `Act as a Domain Specialist. Please clarify your request for "${trimmed}" by specifying your target topic, background context, and desired output format.` : ''
+    };
+  }
+
   const activeKey = getEffectiveApiKey(apiKey);
 
   if (activeKey) {
@@ -62,17 +75,20 @@ Evaluate the user's prompt draft and produce:
 2. A 1-2 sentence personalized feedback explanation.
 3. A single, clean, professionally rewritten prompt that fully fulfills their intent while naturally incorporating expert role, clear context, behavioral constraints, and output format.
 
+STRICT SCORING GUIDELINES:
+- Extremely short, single-word, or single-character inputs (e.g. "a", "hi", "test") MUST receive a score between 0 and 15 out of 100.
+- Vague 2-4 word prompts lacking context or constraints (e.g. "write a poem", "fix my code") MUST receive a score between 15 and 40 out of 100.
+- Prompts with partial context but missing role/format guidelines should score between 45 and 65 out of 100.
+- Comprehensive prompts with explicit persona, context, task goals, constraints, and output layout should score 70 to 100.
+
 STRICT INSTRUCTIONS FOR THE EXPLANATION:
 - Do NOT name abstract category labels (e.g. do NOT write "no target context", "no behavioral constraints", "lack of role/persona", or "no output format").
 - Quote or reference the user's ACTUAL words and specific topic directly.
 - Point out what is specifically ambiguous or missing about THEIR request, and state concretely what specific details for THEIR topic would make the output significantly better.
-- Write like a real human code or writing reviewer giving personalized feedback on their exact draft.
 
 STRICT INSTRUCTIONS FOR THE REWRITTEN PROMPT (finalPrompt):
 - Do NOT simply concatenate template sentences around the user's raw text.
-- Do NOT wrap the user's text in quotes or output "Expand and execute the following task: '...'".
 - Clean up any messy, casual, or repetitive phrasing into a single coherent professional request.
-- Rewrite their core intent into ONE smooth, natural, high-precision prompt that a human expert prompt engineer would write.
 
 RESPOND ONLY WITH VALID JSON (no markdown fences, no extra text):
 {
@@ -95,7 +111,7 @@ ${userPrompt}
 
       const parsed = JSON.parse(jsonStr);
       return {
-        score: typeof parsed.score === 'number' ? Math.min(100, Math.max(0, Math.round(parsed.score))) : 70,
+        score: typeof parsed.score === 'number' ? Math.min(100, Math.max(0, Math.round(parsed.score))) : 25,
         explanation: typeof parsed.explanation === 'string'
           ? parsed.explanation
           : `Your prompt needs more specific details about your goal and desired output layout to give precise results.`,
