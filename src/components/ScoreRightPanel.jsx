@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Award, Zap, Copy, Check, Play, RefreshCw, Sparkles, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { PROMPT_PILLARS } from '../utils/promptAnalyzer';
+import PenguinMascot from './PenguinMascot';
 
 export default function ScoreRightPanel({
   coaxResult,
@@ -13,9 +14,66 @@ export default function ScoreRightPanel({
 }) {
   const [copiedOriginal, setCopiedOriginal] = useState(false);
   const [copiedFinal, setCopiedFinal] = useState(false);
+  const [penguinMode, setPenguinMode] = useState('idle');
 
   const score = coaxResult?.score ?? 0;
   const strokeDashoffset = 226 - (226 * Math.min(100, Math.max(0, score))) / 100;
+
+  const prevScoreRef = useRef(undefined);
+  const timersRef = useRef([]);
+
+  // ─── Timer helpers ───
+  const clearAllTimers = useCallback(() => {
+    timersRef.current.forEach(id => clearTimeout(id));
+    timersRef.current = [];
+  }, []);
+
+  // Idle → 4 s gap → Wave 2 s → repeat
+  const startWaveCycle = useCallback(() => {
+    clearAllTimers();
+    const scheduleWave = () => {
+      const idleTimer = setTimeout(() => {
+        setPenguinMode('wave');
+        const waveTimer = setTimeout(() => {
+          setPenguinMode('idle');
+          scheduleWave();
+        }, 2000);
+        timersRef.current.push(waveTimer);
+      }, 4000);
+      timersRef.current.push(idleTimer);
+    };
+    scheduleWave();
+  }, [clearAllTimers]);
+
+  // Start the idle + wave cycle on mount
+  useEffect(() => {
+    startWaveCycle();
+    return clearAllTimers;
+  }, [startWaveCycle, clearAllTimers]);
+
+  // React to score changes: happy (≥60) or sad (<60) for 3 s, then resume wave cycle
+  useEffect(() => {
+    if (isCoaxing) {
+      clearAllTimers();
+      setPenguinMode('idle');
+      startWaveCycle();
+      return;
+    }
+
+    const newScore = coaxResult?.score;
+    if (newScore !== undefined && newScore !== prevScoreRef.current) {
+      clearAllTimers();
+      setPenguinMode(newScore >= 60 ? 'happy' : 'sad');
+
+      const reactionTimer = setTimeout(() => {
+        setPenguinMode('idle');
+        startWaveCycle();
+      }, 3000);
+      timersRef.current.push(reactionTimer);
+
+      prevScoreRef.current = newScore;
+    }
+  }, [coaxResult?.score, isCoaxing, clearAllTimers, startWaveCycle]);
 
   const getScoreColor = (val) => {
     if (val >= 85) return '#10b981';
@@ -40,6 +98,16 @@ export default function ScoreRightPanel({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto p-4 lg:p-6 space-y-5 bg-slate-950/20">
+      {/* Penguin Mascot */}
+      <div className="flex justify-end">
+        <div
+          id="penguin-container"
+          className="rounded-xl overflow-hidden"
+          style={{ width: 200, height: 220 }}
+        >
+          <PenguinMascot mode={penguinMode} />
+        </div>
+      </div>
       <div className="glass-panel p-5 space-y-4 border-violet-500/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
