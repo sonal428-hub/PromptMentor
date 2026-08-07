@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Award, Zap, Copy, Check, Play, RefreshCw, Sparkles, FileText } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { PROMPT_PILLARS } from '../utils/promptAnalyzer';
 
 export default function ScoreRightPanel({
@@ -271,8 +272,21 @@ export default function ScoreRightPanel({
                     AI Output Quality & Difference Analysis
                   </h4>
                 </div>
-                <div className="text-xs text-gray-200 leading-relaxed font-sans whitespace-pre-wrap">
-                  {comparisonResult.comparisonExplanation}
+                <div className="text-xs text-gray-200 leading-relaxed font-sans">
+                  <ReactMarkdown
+                    components={{
+                      h1: ({ node, ...props }) => <h1 className="text-sm font-bold text-violet-300 mt-2 mb-1" {...props} />,
+                      h2: ({ node, ...props }) => <h2 className="text-xs font-bold text-violet-300 mt-2 mb-1" {...props} />,
+                      h3: ({ node, ...props }) => <h3 className="text-xs font-bold text-violet-300 mt-2 mb-1 font-heading" {...props} />,
+                      h4: ({ node, ...props }) => <h4 className="text-xs font-bold text-violet-300 mt-2 mb-1 font-heading uppercase" {...props} />,
+                      p: ({ node, ...props }) => <p className="mb-1.5 last:mb-0 text-gray-200 leading-relaxed text-xs" {...props} />,
+                      strong: ({ node, ...props }) => <strong className="font-semibold text-violet-200" {...props} />,
+                      ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1 my-1.5 text-xs text-gray-200" {...props} />,
+                      li: ({ node, ...props }) => <li className="text-xs text-gray-200 leading-relaxed" {...props} />,
+                    }}
+                  >
+                    {comparisonResult.comparisonExplanation}
+                  </ReactMarkdown>
                 </div>
               </div>
             )}
