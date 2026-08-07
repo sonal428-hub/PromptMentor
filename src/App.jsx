@@ -192,7 +192,7 @@ export default function App() {
       <footer className="w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-gray-400 gap-4">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-300">PromptMentor</span>
-          <span>• PS05 Collaborative Prompting</span>
+          
         </div>
         <p className="text-gray-400">Designed to educate users through real-time feedback & progressive disclosure.</p>
       </footer>
