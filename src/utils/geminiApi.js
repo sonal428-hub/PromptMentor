@@ -285,11 +285,18 @@ export async function generateLLMResponse({ prompt, apiKey, isEnhanced = false, 
 function calculateFallbackScore(userPrompt) {
   const text = (userPrompt || '').trim();
   const words = text.split(/\s+/).filter(Boolean);
-  let score = 35;
-  if (/act as|you are|role|expert/i.test(text)) score += 15;
+
+  if (words.length === 0) return 0;
+  if (words.length < 2 || text.length < 4) {
+    return Math.min(10, Math.max(2, text.length * 3));
+  }
+
+  let score = 10;
+  if (/act as|you are|role|expert/i.test(text)) score += 20;
   if (/context|background|target|because|for a/i.test(text) || words.length > 20) score += 20;
-  if (/table|json|bullet|list|markdown|code/i.test(text)) score += 15;
-  if (/do not|avoid|limit|under|max|without/i.test(text)) score += 15;
+  if (/table|json|bullet|list|markdown|code/i.test(text)) score += 20;
+  if (/do not|avoid|limit|under|max|without/i.test(text)) score += 20;
+  if (words.length > 10) score += 10;
   return Math.min(100, score);
 }
 
