@@ -49,8 +49,6 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-[calc(100vh-65px)] overflow-hidden">
-
-      {/* Full-viewport Animated Gradient Background */}
       <div className="absolute inset-0 z-0">
         <AnimatedGradientBackground
           Breathing={true}
@@ -72,10 +70,7 @@ export default function HomePage() {
         />
       </div>
 
-      {/* Page Content — floats above gradient */}
       <div className="relative z-10 text-gray-100 p-6 lg:p-12 space-y-10 max-w-7xl mx-auto">
-
-        {/* Hero Section */}
         <div className="text-center space-y-5 max-w-3xl mx-auto pt-4 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5 text-violet-400 animate-pulse" />
@@ -95,7 +90,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 4 Main Service Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
           {services.map((service) => (
             <ServiceCard
@@ -113,7 +107,6 @@ export default function HomePage() {
           ))}
         </div>
 
-        {/* Highlights / Features Banner */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10">
           <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5 space-y-2">
             <div className="flex items-center gap-2 text-violet-400 font-bold text-xs">
@@ -145,9 +138,7 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-
       </div>
     </div>
   );
 }
-

@@ -1,15 +1,6 @@
-/**
- * PromptMentor — Gemini API Handler
- * Uses Google Gemini API (gemini-2.5-flash) with robust error handling and fallback simulation.
- */
-
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
-/**
- * Helper to resolve the API Key:
- * Prefers explicitly passed key, falls back to import.meta.env.VITE_API_KEY
- */
 export function getEffectiveApiKey(passedKey) {
   if (passedKey && passedKey.trim().length > 5) {
     return passedKey.trim();
@@ -21,9 +12,6 @@ export function getEffectiveApiKey(passedKey) {
   return passedKey || '';
 }
 
-/**
- * Raw Gemini REST call targeting gemini-2.5-flash
- */
 async function callGemini(prompt, apiKeyOverride) {
   const apiKey = getEffectiveApiKey(apiKeyOverride);
   if (!apiKey || apiKey.length < 5) {
@@ -56,10 +44,6 @@ async function callGemini(prompt, apiKeyOverride) {
   return text;
 }
 
-/**
- * API CALL 1: coaxAnalyze
- * Returns structured JSON: score (0-100), tags, coach advice, final prompt.
- */
 export async function coaxAnalyze(userPrompt, apiKey) {
   const activeKey = getEffectiveApiKey(apiKey);
 
@@ -121,14 +105,9 @@ ${userPrompt}
     }
   }
 
-  // Smart local fallback if API key fails or network error occurs
   return generateFallbackCoaxAnalysis(userPrompt);
 }
 
-/**
- * API CALL 2: comparePromptOutputs
- * Runs BOTH prompts through Gemini in parallel AND generates quality comparison.
- */
 export async function comparePromptOutputs(originalPrompt, finalPrompt, apiKey) {
   const activeKey = getEffectiveApiKey(apiKey);
 
@@ -166,9 +145,6 @@ Provide a 3-bullet breakdown explaining why the refined output is superior in cl
   };
 }
 
-/**
- * LEGACY EXPORT: generateLLMResponse
- */
 export async function generateLLMResponse({ prompt, apiKey, isEnhanced = false, mockFallback = '' }) {
   const activeKey = getEffectiveApiKey(apiKey);
   if (activeKey) {

@@ -24,7 +24,6 @@ export function ButtonColorful({
       )}
       {...props}
     >
-      {/* Dynamic Theme Glow effect (Violet -> Indigo -> Emerald) */}
       <div
         className={cn(
           "absolute inset-0 pointer-events-none",
@@ -35,7 +34,6 @@ export function ButtonColorful({
         )}
       />
 
-      {/* Content */}
       <div className="relative z-10 flex items-center justify-center gap-1.5">
         {children ? (
           children

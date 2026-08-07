@@ -97,7 +97,6 @@ pre,
   border-radius: 16px;
 }
 
-/* Gradient text */
 .text-gradient {
   background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 50%, #34d399 100%);
   -webkit-background-clip: text;
@@ -110,7 +109,6 @@ pre,
   -webkit-text-fill-color: transparent;
 }
 
-/* Diff Glow Badges */
 .diff-added {
   background-color: rgba(139, 92, 246, 0.2);
   border: 1px dashed rgba(167, 139, 250, 0.6);
@@ -132,7 +130,6 @@ pre,
   }
 }
 
-/* Flip card styling for flashcards */
 .flashcard-inner {
   transition: transform 0.6s;
   transform-style: preserve-3d;
@@ -152,7 +149,6 @@ pre,
   transform: rotateY(180deg);
 }
 
-/* Metric Radial Meter */
 .meter-svg {
   transform: rotate(-90deg);
 }
@@ -165,7 +161,6 @@ pre,
   transition: stroke-dashoffset 0.8s ease-in-out, stroke 0.3s ease;
 }
 
-/* Custom Buttons */
 .btn-primary {
   background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
   color: white;

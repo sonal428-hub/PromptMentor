@@ -8,7 +8,6 @@ import ProgressPage from './pages/ProgressPage';
 import EducationalFlashcards from './components/EducationalFlashcards';
 import ApiKeyModal from './components/ApiKeyModal';
 
-// Workbench components
 import PresetPrompts from './components/PresetPrompts';
 import PromptEditor from './components/PromptEditor';
 import AIGradeScore from './components/AIGradeScore';
@@ -29,12 +28,10 @@ export default function App() {
   const [rawOutput, setRawOutput] = useState('');
   const [enhancedOutput, setEnhancedOutput] = useState('');
 
-  // API Call 1 state
   const [coaxResult, setCoaxResult] = useState(null);
   const [isCoaxing, setIsCoaxing] = useState(false);
   const [coaxError, setCoaxError] = useState('');
 
-  // API Call 2 state
   const [comparisonResult, setComparisonResult] = useState(null);
   const [isComparing, setIsComparing] = useState(false);
   const [compareError, setCompareError] = useState('');
@@ -61,7 +58,6 @@ export default function App() {
     localStorage.setItem('gemini_api_key', key);
   };
 
-  // Coax button handler (API Call 1)
   const handleCoax = async () => {
     if (!userPrompt.trim()) return;
     setIsCoaxing(true);
@@ -77,7 +73,6 @@ export default function App() {
     }
   };
 
-  // Dual LLM comparison handler (API Call 2)
   const handleRunComparison = async () => {
     if (!userPrompt.trim()) return;
     setIsExecuting(true);
@@ -125,7 +120,6 @@ export default function App() {
     }
   };
 
-  // Workbench view component
   const WorkbenchView = (
     <div className="w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col justify-between">
       <div>
@@ -169,14 +163,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white">
-      {/* Top Header */}
       <Header
         apiKey={apiKey}
         onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
       />
 
-      {/* Page Routes */}
       <main className="flex-1 w-full">
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -188,7 +180,6 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Footer */}
       <footer className="w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-gray-400 gap-4">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-300">PromptMentor</span>
@@ -197,7 +188,6 @@ export default function App() {
         <p className="text-gray-400">Designed to educate users through real-time feedback & progressive disclosure.</p>
       </footer>
 
-      {/* Modals */}
       <EducationalFlashcards
         isOpen={isFlashcardsOpen}
         onClose={() => setIsFlashcardsOpen(false)}
