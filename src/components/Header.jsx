@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Target, GraduationCap, Trophy, LineChart, Home, Sparkles } from 'lucide-react';
+import { BookOpen, Target, GraduationCap, LineChart, Home, Sparkles } from 'lucide-react';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 
 export default function Header({ onOpenFlashcards }) {
@@ -9,7 +9,6 @@ export default function Header({ onOpenFlashcards }) {
   const navItems = [
     { label: 'Prompt Improve', path: '/improve', icon: Target },
     { label: 'Learn Prompting', path: '/learn', icon: GraduationCap },
-    { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
     { label: 'Track Progress', path: '/progress', icon: LineChart },
   ];
 
