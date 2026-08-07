@@ -12,7 +12,7 @@ const ICON_MAP = {
 export default function PresetPrompts({ onSelectPreset }) {
   return (
     <div className="w-full mb-6">
-      <div className="flex items-center justify-between mb-3 px-1">
+      {/* <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4 text-amber-400" />
           <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
@@ -50,7 +50,7 @@ export default function PresetPrompts({ onSelectPreset }) {
             </button>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }

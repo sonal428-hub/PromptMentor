@@ -33,7 +33,6 @@ export default function AIGradeScore({ analysis }) {
           </span>
         </div>
 
-        {/* Score Radial & Main Card */}
         <div className="flex items-center gap-5 p-4 rounded-xl bg-slate-950/60 border border-white/5 mb-5">
           <div className="relative w-24 h-24 flex items-center justify-center flex-shrink-0">
             <svg className="w-24 h-24 meter-svg" viewBox="0 0 80 80">
