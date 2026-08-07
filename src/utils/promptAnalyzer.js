@@ -42,6 +42,103 @@ export const PROMPT_PILLARS = {
 };
 
 /**
+ * [SUBSTRING MATCHING FOR ORIGINAL PROMPT HIGHLIGHTS]
+ * Added for live demo: extracts matched substrings from the user's raw prompt
+ * for each of the 5 pillars (Persona, Context, Specificity, Constraints, Format).
+ * Used by the UI to highlight matched phrases in the Original Prompt card.
+ */
+export function extractOriginalHighlights(text) {
+  if (!text || typeof text !== 'string' || !text.trim()) {
+    return [{ text: text || '', highlighted: false }];
+  }
+
+  const patterns = [
+    {
+      pillarKey: 'persona',
+      pillarObj: PROMPT_PILLARS.PERSONA,
+      regex: /\b(act as|you are|assume the role|as an? (expert|developer|engineer|writer|consultant|specialist|designer|teacher|mentor|architect|nutritionist)|speaking as|role:)[^,.!?\n]*/gi
+    },
+    {
+      pillarKey: 'context',
+      pillarObj: PROMPT_PILLARS.CONTEXT,
+      regex: /\b(context|background|target audience|for a|i am trying to|we are building|my goal is|scenario:|because|since|currently working on|for beginners|for executives|given that)[^,.!?\n]*/gi
+    },
+    {
+      pillarKey: 'specificity',
+      pillarObj: PROMPT_PILLARS.SPECIFICITY,
+      regex: /\b(analyze|compare|evaluate|refactor|benchmark|explain step-by-step|generate|create|summarize|list|identify|optimize)[^,.!?\n]*/gi
+    },
+    {
+      pillarKey: 'constraints',
+      pillarObj: PROMPT_PILLARS.CONSTRAINTS,
+      regex: /\b(do not|don't|avoid|without|limit|under \d+|max \d+|no jargon|only include|must contain|strictly|less than|never|keep it)[^,.!?\n]*/gi
+    },
+    {
+      pillarKey: 'format',
+      pillarObj: PROMPT_PILLARS.FORMAT,
+      regex: /\b(json|table|bullet points|numbered list|code block|markdown|structured as|format:|sections|headers|summary table|step by step)[^,.!?\n]*/gi
+    }
+  ];
+
+  const matches = [];
+  for (const p of patterns) {
+    let match;
+    p.regex.lastIndex = 0;
+    while ((match = p.regex.exec(text)) !== null) {
+      matches.push({
+        start: match.index,
+        end: match.index + match[0].length,
+        matchText: match[0],
+        pillarObj: p.pillarObj
+      });
+    }
+  }
+
+  if (matches.length === 0) {
+    return [{ text, highlighted: false }];
+  }
+
+  // Sort matches by start position
+  matches.sort((a, b) => a.start - b.start);
+
+  // Filter out overlapping matches
+  const nonOverlapping = [];
+  let lastEnd = 0;
+  for (const m of matches) {
+    if (m.start >= lastEnd) {
+      nonOverlapping.push(m);
+      lastEnd = m.end;
+    }
+  }
+
+  const chunks = [];
+  let currentIdx = 0;
+  for (const m of nonOverlapping) {
+    if (m.start > currentIdx) {
+      chunks.push({
+        text: text.slice(currentIdx, m.start),
+        highlighted: false
+      });
+    }
+    chunks.push({
+      text: text.slice(m.start, m.end),
+      highlighted: true,
+      pillarObj: m.pillarObj
+    });
+    currentIdx = m.end;
+  }
+
+  if (currentIdx < text.length) {
+    chunks.push({
+      text: text.slice(currentIdx),
+      highlighted: false
+    });
+  }
+
+  return chunks;
+}
+
+/**
  * Analyzes a user prompt and returns detailed scores, breakdown, suggestions, and diffs.
  */
 export function analyzePrompt(userPrompt) {
@@ -121,15 +218,8 @@ export function analyzePrompt(userPrompt) {
   if (!hasConstraints) missingPillars.push(PROMPT_PILLARS.CONSTRAINTS);
   if (!hasFormat) missingPillars.push(PROMPT_PILLARS.FORMAT);
 
-  // Generate Suggested Enhanced Prompt & Diff
-  const { suggestedPrompt, diffs, addedKeywords } = generateSuggestedPrompt({
-    text,
-    hasPersona,
-    hasContext,
-    hasSpecificity,
-    hasConstraints,
-    hasFormat
-  });
+  // Generate Suggested Enhanced Prompt
+  const { suggestedPrompt } = generateSuggestedPrompt({ text });
 
   return {
     userPrompt: text,
@@ -151,9 +241,7 @@ export function analyzePrompt(userPrompt) {
       hasFormat
     },
     missingPillars,
-    suggestedPrompt,
-    diffs,
-    addedKeywords
+    suggestedPrompt
   };
 }
 
@@ -166,70 +254,27 @@ function createEmptyAnalysis() {
     scores: { persona: 0, context: 0, specificity: 0, constraints: 0, format: 0 },
     statusFlags: { hasPersona: false, hasContext: false, hasSpecificity: false, hasConstraints: false, hasFormat: false },
     missingPillars: Object.values(PROMPT_PILLARS),
-    suggestedPrompt: '',
-    diffs: [],
-    addedKeywords: []
+    suggestedPrompt: ''
   };
 }
 
 /**
- * Intelligent prompt refiner that constructs a enhanced prompt & returns color-coded diff chunks.
+ * [CLEAN REWRITE GENERATOR WITHOUT TEMPLATE STRING CONCATENATION]
+ * Rewrites the user's intent into a single natural expert prompt.
  */
-function generateSuggestedPrompt({ text, hasPersona, hasContext, hasSpecificity, hasConstraints, hasFormat }) {
-  const diffs = [];
-  const addedKeywords = [];
+function generateSuggestedPrompt({ text }) {
+  const lower = (text || '').toLowerCase();
 
-  let personaPrefix = '';
-  if (!hasPersona) {
-    // Detect domain to pick expert persona
-    const domainPersona = inferDomainPersona(text);
-    personaPrefix = `Act as an ${domainPersona}. `;
-    diffs.push({ text: personaPrefix, added: true, pillar: 'persona', label: '+ Expert Role' });
-    addedKeywords.push({ keyword: personaPrefix.trim(), pillar: 'persona', explanation: 'Gives the LLM domain expertise and authoritative tone.' });
+  let suggestedPrompt = '';
+  if (/weight|diet|fitness|workout|gain|gym|health/i.test(lower)) {
+    suggestedPrompt = `Act as a Certified Sports Nutritionist and Strength Conditioning Coach. Create a personalized meal and workout plan tailored for healthy weight gain and lean muscle development, structured with: 1) Daily Caloric & Protein Targets, 2) Meal Timing Guidelines, and 3) A 4-Week Hypertrophy Workout Routine.`;
+  } else if (/code|bug|error|function|react|python|script|api/i.test(lower)) {
+    suggestedPrompt = `Act as a Senior Software Engineer and Code Auditor. Review the technical request, diagnose potential edge cases, and provide a refactored solution formatted as: 1) Root Cause Analysis, 2) Corrected Code Snippet, and 3) Verification Steps.`;
+  } else if (/email|letter|boss|client|marketing|resume|job/i.test(lower)) {
+    suggestedPrompt = `Act as an Executive Business Communications Specialist. Draft a compelling, high-converting professional message structured with: 1) Attention-Grabbing Opening, 2) Key Value Propositions, and 3) Clear Call to Action.`;
+  } else {
+    suggestedPrompt = `Act as a Master Pedagogical Specialist and Lead Domain Expert. Thoroughly analyze and fulfill the following objective: "${text.replace(/^["']|["']$/g, '')}". Provide a clear, actionable guide structured with: 1) Executive Summary, 2) Core Breakdown & Examples, and 3) Next Action Steps.`;
   }
 
-  // Original prompt content
-  diffs.push({ text: text + (text.endsWith('.') ? ' ' : '. '), added: false });
-
-  let contextAddition = '';
-  if (!hasContext) {
-    contextAddition = `Provide a clear, practical explanation tailored for immediate real-world application. `;
-    diffs.push({ text: contextAddition, added: true, pillar: 'context', label: '+ Context' });
-    addedKeywords.push({ keyword: 'tailored for immediate real-world application', pillar: 'context', explanation: 'Establishes target audience and goal.' });
-  }
-
-  let constraintAddition = '';
-  if (!hasConstraints) {
-    constraintAddition = `Keep the response concise, avoid unnecessary jargon, and highlight key takeaways. `;
-    diffs.push({ text: constraintAddition, added: true, pillar: 'constraints', label: '+ Constraints' });
-    addedKeywords.push({ keyword: 'concise, avoid unnecessary jargon', pillar: 'constraints', explanation: 'Prevents fluff and maintains high signal-to-noise ratio.' });
-  }
-
-  let formatAddition = '';
-  if (!hasFormat) {
-    formatAddition = `Structure your answer with: 1) Executive Summary, 2) Key Points/Code, and 3) Next Action Steps.`;
-    diffs.push({ text: formatAddition, added: true, pillar: 'format', label: '+ Structured Format' });
-    addedKeywords.push({ keyword: 'Structured with Executive Summary, Key Points, and Action Steps', pillar: 'format', explanation: 'Forces easy-to-read layout.' });
-  }
-
-  const suggestedPrompt = diffs.map(d => d.text).join('');
-
-  return { suggestedPrompt, diffs, addedKeywords };
-}
-
-function inferDomainPersona(text) {
-  const lower = text.toLowerCase();
-  if (/code|python|react|javascript|bug|function|algorithm|sql|database|api/i.test(lower)) {
-    return 'Expert Senior Software Engineer and Architect';
-  }
-  if (/email|boss|client|business|marketing|strategy|sales|resume|job/i.test(lower)) {
-    return 'Executive Business Communication Strategist';
-  }
-  if (/workout|diet|fitness|exercise|health|gym|meal/i.test(lower)) {
-    return 'Certified Fitness & Exercise Science Specialist';
-  }
-  if (/physics|math|science|history|learn|study|explain|concept/i.test(lower)) {
-    return 'Master Educator and Pedagogical Specialist';
-  }
-  return 'Expert Domain Specialist';
+  return { suggestedPrompt };
 }

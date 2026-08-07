@@ -63,9 +63,10 @@ export default function App() {
     }
   };
 
-  const handleUseSuggestedPrompt = () => {
-    if (coaxResult?.finalPrompt) {
-      setUserPrompt(coaxResult.finalPrompt);
+  const handleUseSuggestedPrompt = (suggestedText) => {
+    const textToUse = typeof suggestedText === 'string' ? suggestedText : coaxResult?.finalPrompt;
+    if (textToUse) {
+      setUserPrompt(textToUse);
     }
   };
 

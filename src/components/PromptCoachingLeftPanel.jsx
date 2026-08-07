@@ -1,6 +1,7 @@
 import React from 'react';
-import { ArrowUp, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, Layers, Edit3, HelpCircle } from 'lucide-react';
+import { ArrowUp, Sparkles, CheckCircle2, XCircle, ArrowRight, RefreshCw, Layers, Edit3, HelpCircle, Award } from 'lucide-react';
 import PresetPrompts from './PresetPrompts';
+import { analyzePrompt, PROMPT_PILLARS } from '../utils/promptAnalyzer';
 
 export default function PromptCoachingLeftPanel({
   userPrompt,
@@ -11,12 +12,54 @@ export default function PromptCoachingLeftPanel({
   onCoax,
   onUseSuggestedPrompt,
   onDismiss,
-  apiKey
+  apiKey,
+  aiScoreResult,
+  isAiScoreLoading
 }) {
+  // Real-time client-side heuristic evaluation on every keystroke
+  const heuristic = analyzePrompt(userPrompt);
+
+  // Active AI rewritten prompt from the debounced Gemini API call or coaxResult
+  const activeSuggestedPrompt = aiScoreResult?.finalPrompt || coaxResult?.finalPrompt || '';
+
+  // Handler to load the suggested prompt directly into the Prompt Console textarea
+  const handleUseSuggestedClick = () => {
+    if (activeSuggestedPrompt) {
+      setUserPrompt(activeSuggestedPrompt);
+      if (onUseSuggestedPrompt) {
+        onUseSuggestedPrompt(activeSuggestedPrompt);
+      }
+    }
+  };
+
+  // Dynamic coach advice: uses debounced AI explanation or live heuristic advice
+  const dynamicCoachAdvice = aiScoreResult?.explanation || (() => {
+    const missing = Object.values(PROMPT_PILLARS).filter(
+      p => !heuristic.statusFlags[`has${p.id.charAt(0).toUpperCase() + p.id.slice(1)}`]
+    );
+    if (missing.length === 0) {
+      return "Excellent prompt! You've included clear role framing, context, constraints, and output structure.";
+    }
+    return `To improve quality, consider specifying ${missing.map(p => p.title).join(' and ')}.`;
+  })();
+
+  // Checklist items updating live on every keystroke
+  const checklistItems = [
+    { label: 'Role/Persona', pass: heuristic.statusFlags.hasPersona },
+    { label: 'Good Context', pass: heuristic.statusFlags.hasContext },
+    { label: 'Specific Details', pass: heuristic.statusFlags.hasSpecificity },
+    { label: 'Has Constraints', pass: heuristic.statusFlags.hasConstraints },
+    { label: 'Output Format', pass: heuristic.statusFlags.hasFormat },
+    { label: 'Clear Intent', pass: heuristic.wordCount >= 3 }
+  ];
+
+  const metCount = checklistItems.filter(i => i.pass).length;
+
   return (
     <div className="flex flex-col h-full overflow-hidden bg-slate-950/40 border-r border-white/5 relative">
       <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-5">
 
+        {/* Top Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -32,6 +75,63 @@ export default function PromptCoachingLeftPanel({
           </span>
         </div>
 
+        {/* Heuristic Score Card (Cylindrical Tube 0-10) */}
+        <div className="glass-panel p-4 space-y-3 border-violet-500/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-violet-400" />
+              <h3 className="text-xs font-bold text-gray-100 font-heading uppercase tracking-wider">
+                Heuristic Score
+              </h3>
+            </div>
+            <span className="text-[11px] font-mono font-bold text-violet-300 bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/20">
+              {(heuristic.overallScore / 10).toFixed(1)} / 10
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 p-3.5 rounded-xl bg-slate-950/80 border border-white/5">
+            {/* Cylindrical Tube Progress Bar */}
+            <div className="relative w-6 h-20 rounded-full bg-slate-900 border border-white/20 overflow-hidden flex flex-col justify-end p-0.5 shadow-inner flex-shrink-0">
+              <div
+                className="w-full rounded-full transition-all duration-300 ease-out bg-gradient-to-t from-violet-600 via-indigo-500 to-emerald-400"
+                style={{ height: `${heuristic.overallScore}%` }}
+              />
+            </div>
+
+            <div className="flex-1 space-y-1">
+              <div className="text-2xl font-black font-heading text-white">
+                {(heuristic.overallScore / 10).toFixed(1)}{' '}
+                <span className="text-xs text-gray-400 font-normal font-mono">/ 10</span>
+              </div>
+              <p className="text-[11px] text-gray-400 leading-snug">
+                Real-time structural heuristic rating updated live on every keystroke.
+              </p>
+            </div>
+          </div>
+
+          {/* Simplified Pillar Breakdown Estimate */}
+          <div className="pt-2 border-t border-white/5 space-y-1.5">
+            <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+              Pillar Breakdown Estimate
+            </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+              {Object.entries(PROMPT_PILLARS).map(([key, pillar]) => {
+                const pScore = heuristic.scores?.[pillar.id] ?? 0;
+                return (
+                  <div key={pillar.id} className="flex items-center justify-between text-[11px]">
+                    <span className="text-gray-300 font-medium flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: pillar.color }} />
+                      {pillar.title}
+                    </span>
+                    <span className="font-mono text-gray-400 font-semibold">{pScore}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Starter Examples */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -42,6 +142,7 @@ export default function PromptCoachingLeftPanel({
           <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
         </div>
 
+        {/* Concept & Engineering Checklist */}
         <div className="glass-panel p-4 space-y-3 border-violet-500/20">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
@@ -49,53 +150,44 @@ export default function PromptCoachingLeftPanel({
               Concept & Engineering Checklist
             </h3>
             <span className="text-xs text-gray-400 font-mono">
-              {coaxResult ? `${coaxResult.tags.filter(t => t.status === 'pass').length} / ${coaxResult.tags.length} Met` : 'Awaiting Input'}
+              {userPrompt.trim() ? `${metCount} / ${checklistItems.length} Met` : 'Awaiting Input'}
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {coaxResult ? (
-              coaxResult.tags.map((tag, idx) => {
-                const isPass = tag.status === 'pass';
-                return (
-                  <div
-                    key={idx}
-                    className={`p-2 rounded-lg border text-xs flex items-center gap-2 transition-all ${
-                      isPass
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                        : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
-                    }`}
-                  >
-                    {isPass ? (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                    ) : (
-                      <XCircle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
-                    )}
-                    <span className="font-medium truncate">{tag.label}</span>
-                  </div>
-                );
-              })
+            {userPrompt.trim() ? (
+              checklistItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`p-2 rounded-lg border text-xs flex items-center gap-2 transition-all ${
+                    item.pass
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                  }`}
+                >
+                  {item.pass ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                  )}
+                  <span className="font-medium truncate">{item.label}</span>
+                </div>
+              ))
             ) : (
-              [
-                'Clear Intent',
-                'Good Context',
-                'Specific Details',
-                'Has Constraints',
-                'Output Format',
-                'Role/Persona'
-              ].map((label, idx) => (
+              checklistItems.map((item, idx) => (
                 <div
                   key={idx}
                   className="p-2 rounded-lg border border-white/5 bg-slate-900/50 text-gray-500 text-xs flex items-center gap-2 opacity-70"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
-                  <span className="truncate">{label}</span>
+                  <span className="truncate">{item.label}</span>
                 </div>
               ))
             )}
           </div>
         </div>
 
+        {/* Live Coach Advice Card */}
         <div className="glass-panel-glow p-5 space-y-4 relative overflow-hidden">
           <div className="flex items-center justify-between border-b border-violet-500/20 pb-3">
             <div className="flex items-center gap-2">
@@ -104,7 +196,7 @@ export default function PromptCoachingLeftPanel({
                 Live Coach Advice
               </h3>
             </div>
-            {coaxResult && (
+            {userPrompt.trim() && (
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                 Real-Time Feedback
               </span>
@@ -112,39 +204,41 @@ export default function PromptCoachingLeftPanel({
           </div>
 
           <div className="text-xs text-gray-200 leading-relaxed font-sans min-h-[70px] flex items-center">
-            {isCoaxing ? (
+            {isCoaxing || isAiScoreLoading ? (
               <div className="flex items-center gap-3 text-violet-300 animate-pulse">
                 <RefreshCw className="w-4 h-4 animate-spin text-violet-400" />
-                <span>Gemini Coach is evaluating your prompt structure...</span>
+                <span>Evaluating prompt structure with AI...</span>
               </div>
             ) : coaxError ? (
               <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 w-full text-xs">
                 ❌ {coaxError}
               </div>
-            ) : coaxResult ? (
+            ) : userPrompt.trim() ? (
               <p className="italic text-gray-200 bg-slate-950/60 p-3.5 rounded-xl border border-white/5 w-full">
-                "{coaxResult.coachAdvice}"
+                "{dynamicCoachAdvice}"
               </p>
             ) : (
               <p className="text-gray-400 italic">
-                Enter your draft prompt in the input bar below and click the upward arrow to receive live AI advice and targeted prompt improvements.
+                Enter your draft prompt in the input bar below to receive live AI advice and targeted prompt improvements.
               </p>
             )}
           </div>
 
-          {coaxResult && (
+          {/* Action controls: Use Suggested Prompt button */}
+          {activeSuggestedPrompt && (
             <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
               <button
-                onClick={onUseSuggestedPrompt}
-                disabled={!coaxResult?.finalPrompt}
-                className="btn-primary text-xs py-2 px-3 flex-1 flex items-center justify-center gap-1.5 shadow-md shadow-violet-600/30"
+                onClick={handleUseSuggestedClick}
+                disabled={!activeSuggestedPrompt || isAiScoreLoading}
+                className="btn-primary text-xs py-2 px-3 flex-1 flex items-center justify-center gap-1.5 shadow-md shadow-violet-600/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                title="Load AI suggested prompt into Prompt Console"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
                 <span>Use Suggested Prompt</span>
               </button>
               <button
                 onClick={onDismiss}
-                className="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1 hover:border-gray-500 text-gray-400"
+                className="btn-secondary text-xs py-2 px-3 flex items-center justify-center gap-1 hover:border-gray-500 text-gray-400 cursor-pointer"
               >
                 <span>Dismiss</span>
               </button>
@@ -164,6 +258,7 @@ export default function PromptCoachingLeftPanel({
 
       </div>
 
+      {/* Pinned Bottom Prompt Console */}
       <div className="sticky bottom-0 left-0 right-0 p-4 bg-slate-950/95 backdrop-blur-xl border-t border-violet-500/30 shadow-[0_-10px_25px_rgba(0,0,0,0.5)] z-20">
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between text-[11px] text-gray-400 px-1">
