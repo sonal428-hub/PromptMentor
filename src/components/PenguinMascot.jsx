@@ -23,11 +23,12 @@ const penguinStyles = `
     animation: pm-shadow-pulse 1.6s ease-in-out infinite;
   }
 
-  /* ---------- whole-body idle bounce ---------- */
+  /* ---------- whole-body idle bounce & white glowing border ---------- */
   .penguin-mascot-stage #pm-penguin {
     transform-box: fill-box;
     transform-origin: 50% 100%;
     animation: pm-bounce 2.2s cubic-bezier(.45,0,.55,1) infinite;
+    filter: drop-shadow(0 0 1.5px #ffffff) drop-shadow(0 0 3.5px #ffffff) drop-shadow(0 0 7px rgba(255, 255, 255, 0.75));
   }
 
   @keyframes pm-bounce {
