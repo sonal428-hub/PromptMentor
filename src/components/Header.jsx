@@ -23,9 +23,6 @@ export default function Header({ onOpenFlashcards }) {
             alt="PromptMentor Logo"
             className="w-full h-full object-cover rounded-[14px] bg-slate-950"
           />
-          <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-950 rounded-full flex items-center justify-center">
-            <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
-          </div>
         </div>
 
         <div className="flex items-center">
