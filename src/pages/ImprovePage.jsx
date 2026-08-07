@@ -126,20 +126,10 @@ export default function ImprovePage({
 
   return (
     <div className="h-[calc(100vh-65px)] bg-slate-950 p-3 sm:p-4 lg:p-5 flex flex-col justify-between overflow-hidden">
-      <div className="max-w-7xl mx-auto w-full h-full flex flex-col justify-between space-y-3">
+      <div className="max-w-7xl mx-auto w-full h-full flex flex-col justify-between">
         
-        {/* Compact Centered Top Heading */}
-        <div className="text-center space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-black font-heading tracking-tight bg-gradient-to-r from-white via-violet-200 to-indigo-300 bg-clip-text text-transparent drop-shadow-md">
-            Prompt Improvement
-          </h1>
-          <p className="text-xs text-slate-300 max-w-xl mx-auto font-sans opacity-90">
-            Realtime score analysis, live AI coach advice & dual LLM evaluation
-          </p>
-        </div>
-
-        {/* Main Glass Dashboard Box */}
-        <div className="flex-1 glass-panel p-4 sm:p-5 border-violet-500/20 shadow-2xl rounded-3xl bg-slate-900/50 backdrop-blur-xl flex flex-col justify-between gap-4 overflow-hidden">
+        {/* Main Glass Dashboard Box - Scaled Up */}
+        <div className="h-full flex-1 glass-panel p-4 sm:p-6 border-violet-500/20 shadow-2xl rounded-3xl bg-slate-900/50 backdrop-blur-xl flex flex-col justify-between gap-5 overflow-hidden">
           
           {/* Top Grid: Left (Realtime Score) & Right (AI Score) - Completely Symmetrical */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0 overflow-hidden">
