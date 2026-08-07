@@ -17,18 +17,31 @@ export default function Header({ onOpenFlashcards }) {
   return (
     <header className="w-full border-b border-white/10 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between gap-4 shadow-xl shadow-slate-950/50">
       <Link to="/" className="flex items-center gap-3 group focus:outline-none">
-        <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-violet-500/25 group-hover:scale-105 group-hover:shadow-violet-500/40 transition-all duration-300">
-          <img
-            src="/logo.png"
-            alt="PromptMentor Logo"
-            className="w-full h-full object-cover rounded-[14px] bg-slate-950"
-          />
-        </div>
+        <div className="flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-white/10 group-hover:border-violet-500/40 shadow-lg shadow-slate-950/60 group-hover:shadow-violet-500/15 transition-all duration-300">
+          
+          {/* Logo with ambient glow */}
+          <div className="relative w-9 h-9 flex items-center justify-center">
+            <div className="absolute -inset-1 bg-gradient-to-tr from-violet-600 via-indigo-500 to-emerald-400 rounded-xl blur-md opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
+            <div className="relative w-9 h-9 rounded-xl overflow-hidden ring-1 ring-white/20 group-hover:ring-violet-400/50 bg-slate-950 p-0.5 shadow-inner transition-all duration-300">
+              <img
+                src="/logo.png"
+                alt="PromptMentor Logo"
+                className="w-full h-full object-contain rounded-[10px]"
+              />
+            </div>
+          </div>
 
-        <div className="flex items-center">
-          <h1 className="text-xl font-black tracking-tight font-heading bg-gradient-to-r from-white via-violet-200 to-indigo-300 bg-clip-text text-transparent group-hover:from-violet-300 group-hover:to-emerald-300 transition-all">
-            PromptMentor
-          </h1>
+          {/* Brand Name & AI Badge */}
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg sm:text-xl font-black tracking-tight font-heading bg-gradient-to-r from-white via-slate-100 to-violet-300 bg-clip-text text-transparent group-hover:from-violet-200 group-hover:to-emerald-300 transition-all duration-300">
+              PromptMentor
+            </h1>
+            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-widest text-violet-300 bg-gradient-to-r from-violet-500/15 to-indigo-500/15 border border-violet-500/30 px-2 py-0.5 rounded-full shadow-sm">
+              <Sparkles className="w-2.5 h-2.5 text-violet-400" />
+              AI
+            </span>
+          </div>
+
         </div>
       </Link>
 
