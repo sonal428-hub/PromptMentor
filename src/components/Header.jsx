@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Target, GraduationCap, LineChart, Home, Sparkles } from 'lucide-react';
+import { BookOpen, Target, GraduationCap, LineChart, Home } from 'lucide-react';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 
 export default function Header({ onOpenFlashcards }) {
@@ -18,7 +18,7 @@ export default function Header({ onOpenFlashcards }) {
     <header className="w-full border-b border-white/10 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between gap-4 shadow-xl shadow-slate-950/50">
       <Link to="/" className="flex items-center gap-3 group focus:outline-none">
         <div className="flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-white/10 group-hover:border-violet-500/40 shadow-lg shadow-slate-950/60 group-hover:shadow-violet-500/15 transition-all duration-300">
-          
+
           {/* Logo with ambient glow */}
           <div className="relative w-9 h-9 flex items-center justify-center">
             <div className="absolute -inset-1 bg-gradient-to-tr from-violet-600 via-indigo-500 to-emerald-400 rounded-xl blur-md opacity-40 group-hover:opacity-75 transition-opacity duration-300" />
@@ -36,10 +36,6 @@ export default function Header({ onOpenFlashcards }) {
             <h1 className="text-lg sm:text-xl font-black tracking-tight font-heading bg-gradient-to-r from-white via-slate-100 to-violet-300 bg-clip-text text-transparent group-hover:from-violet-200 group-hover:to-emerald-300 transition-all duration-300">
               PromptMentor
             </h1>
-            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-widest text-violet-300 bg-gradient-to-r from-violet-500/15 to-indigo-500/15 border border-violet-500/30 px-2 py-0.5 rounded-full shadow-sm">
-              <Sparkles className="w-2.5 h-2.5 text-violet-400" />
-              AI
-            </span>
           </div>
 
         </div>
