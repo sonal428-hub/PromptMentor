@@ -1128,18 +1128,40 @@ export default function LearnPage() {
       const key = `${lessonId}-${questionIndex}`;
       setSolvedQuestionKeys((prev) => {
         if (prev.includes(key)) return prev;
-        setSolvedQuestionsCount((count) => count + 1);
-        return [...prev, key];
+        const nextKeys = [...prev, key];
+        const nextCount = nextKeys.length;
+        setSolvedQuestionsCount(nextCount);
+        return nextKeys;
       });
     },
     []
   );
 
-  const handleLessonCompleted = useCallback((lessonId) => {
-    setCompletedLessons((prev) =>
-      prev.includes(lessonId) ? prev : [...prev, lessonId]
-    );
+  // Persist exam score whenever a lesson is fully completed.
+  // BUG FIX: Previously used (solvedQuestions / 18) which penalized the user
+  // for not having reached locked lessons yet. Now uses completed lessons as
+  // the basis: (completedLessons / totalLessons) × 100.
+  const handleLessonCompletedWithScore = useCallback((lessonId) => {
+    setCompletedLessons((prev) => {
+      if (prev.includes(lessonId)) return prev;
+      const nextCompleted = [...prev, lessonId];
+      const totalLessons = LESSONS.length; // 6
+      const examScore = Math.round((nextCompleted.length / totalLessons) * 100);
+
+      // Diagnostic log: confirm the values feeding the exam score calculation
+      console.log(
+        `[PromptMentor Exam Score] completedLessons=${nextCompleted.length}, totalLessons=${totalLessons}, examScore=${examScore}%`
+      );
+
+      try {
+        localStorage.setItem('promptmentor_exam_score', JSON.stringify(examScore));
+      } catch { /* localStorage unavailable — fail silently */ }
+
+      return nextCompleted;
+    });
   }, []);
+
+
 
   const totalQuestions = useMemo(
     () => LESSONS.reduce((sum, l) => sum + l.questions.length, 0),
@@ -1223,7 +1245,7 @@ export default function LearnPage() {
         <QuizModal
           lesson={quizLesson}
           onClose={() => setQuizLesson(null)}
-          onLessonCompleted={handleLessonCompleted}
+          onLessonCompleted={handleLessonCompletedWithScore}
           onQuestionSolved={handleQuestionSolved}
         />
       )}

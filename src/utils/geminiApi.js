@@ -1,6 +1,30 @@
 const GEMINI_MODEL = 'gemini-1.5-flash';
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
+/**
+ * Records a prompt coaching score to localStorage for the Track Progress page.
+ * Appends { score, timestamp } to the `promptmentor_scores` array.
+ * Keeps at most 50 entries. Fails silently if localStorage is unavailable.
+ */
+function recordPromptScore(score) {
+  if (typeof score !== 'number' || isNaN(score)) return;
+  try {
+    const raw = localStorage.getItem('promptmentor_scores');
+    let scores = [];
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        scores = parsed.filter(
+          s => s && typeof s === 'object' && typeof s.score === 'number' && !isNaN(s.score)
+        );
+      }
+    }
+    scores.push({ score: Math.min(100, Math.max(0, Math.round(score))), timestamp: Date.now() });
+    if (scores.length > 50) scores = scores.slice(scores.length - 50);
+    localStorage.setItem('promptmentor_scores', JSON.stringify(scores));
+  } catch { /* localStorage unavailable — fail silently */ }
+}
+
 export function getEffectiveApiKey(passedKey) {
   if (passedKey && passedKey.trim().length > 5) {
     return passedKey.trim();
@@ -177,6 +201,7 @@ ${userPrompt}
 
       const parsed = JSON.parse(jsonStr);
       const scoreVal = typeof parsed.score === 'number' ? Math.min(100, Math.max(0, Math.round(parsed.score))) : 70;
+      recordPromptScore(scoreVal);
 
       return {
         score: scoreVal,
@@ -193,8 +218,11 @@ ${userPrompt}
     }
   }
 
+  const fallbackScoreVal = calculateFallbackScore(userPrompt);
+  recordPromptScore(fallbackScoreVal);
+
   return {
-    score: calculateFallbackScore(userPrompt),
+    score: fallbackScoreVal,
     tags: [
       { label: 'Clear Intent', status: userPrompt.trim().split(/\s+/).length > 2 ? 'pass' : 'fail' },
       { label: 'Good Context', status: userPrompt.length > 25 ? 'pass' : 'fail' },
