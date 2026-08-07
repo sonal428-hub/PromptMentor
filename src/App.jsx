@@ -9,6 +9,7 @@ import ProgressPage from './pages/ProgressPage';
 import EducationalFlashcards from './components/EducationalFlashcards';
 import ApiKeyModal from './components/ApiKeyModal';
 import ScrollToTop from './components/ScrollToTop';
+import GlobalPenguinMascot from './components/GlobalPenguinMascot';
 import { coaxAnalyze, comparePromptOutputs } from './utils/geminiApi';
 
 export default function App() {
@@ -79,6 +80,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white font-sans">
       <ScrollToTop />
+      <GlobalPenguinMascot coaxResult={coaxResult} isCoaxing={isCoaxing} />
       <Header
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
       />

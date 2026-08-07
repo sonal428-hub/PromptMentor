@@ -105,16 +105,6 @@ export default function ScoreRightPanel({
 
   return (
     <div className="relative flex flex-col h-full overflow-y-auto p-4 lg:p-6 space-y-5 bg-slate-950/20">
-      {/* Floating Penguin Mascot Widget – Fully transparent background, fixed position, z-index 50 */}
-      <div className="fixed top-20 right-8 z-50 pointer-events-auto transition-transform duration-300 hover:scale-115 hover:-translate-y-1">
-        <div
-          id="penguin-container"
-          className="bg-transparent"
-          style={{ width: 100, height: 110 }}
-        >
-          <PenguinMascot mode={penguinMode} />
-        </div>
-      </div>
       <div className="glass-panel p-5 space-y-4 border-violet-500/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
