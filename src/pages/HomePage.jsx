@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Award, Zap, Layers } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Award, Zap, Layers } from 'lucide-react';
 import { ServiceCard } from '@/components/ui/service-card';
 import { GetStartedButton } from '@/components/ui/get-started-button';
 import AnimatedGradientBackground from '@/components/ui/animated-gradient-background';
@@ -47,6 +48,24 @@ export default function HomePage() {
     },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.15,
+        ease: [0.25, 0.1, 0.25, 1],
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
+
   return (
     <div className="relative min-h-[calc(100vh-65px)] overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -70,27 +89,41 @@ export default function HomePage() {
         />
       </div>
 
-      <div className="relative z-10 text-gray-100 p-6 lg:p-12 space-y-10 max-w-7xl mx-auto">
-        <div className="text-center space-y-5 max-w-3xl mx-auto pt-4 flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5 text-violet-400 animate-pulse" />
-            <span>Real-Time Collaborative Prompt Engineering</span>
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gradient font-heading leading-tight">
+      <div className="relative z-10 text-gray-100 p-6 lg:p-12 space-y-12 max-w-7xl mx-auto">
+        
+        {/* Animated Hero Section without the tag */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="text-center max-w-4xl mx-auto pt-6 pb-2 flex flex-col items-center space-y-6"
+        >
+          <motion.h1
+            variants={itemVariants}
+            className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight font-heading leading-[1.1] bg-gradient-to-r from-white via-violet-200 via-indigo-200 to-emerald-300 bg-clip-text text-transparent drop-shadow-[0_10px_25px_rgba(124,58,237,0.3)]"
+          >
             Write Better Prompts with Live AI Coaching
-          </h1>
+          </motion.h1>
 
-          <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
-            PromptMentor teaches specificity, context, constraints, and roles in real time — leaving you skilled at prompt engineering on your own over time, rather than hiding fixes behind the scenes.
-          </p>
+          <motion.p
+            variants={itemVariants}
+            className="text-slate-300 text-base sm:text-xl font-normal leading-relaxed max-w-2xl font-sans tracking-wide opacity-90"
+          >
+            PromptMentor teaches specificity, context, constraints, and roles in real time — leaving you skilled at prompt engineering on your own over time.
+          </motion.p>
 
-          <div className="pt-3">
+          <motion.div variants={itemVariants} className="pt-4">
             <GetStartedButton onClick={() => navigate('/improve')} />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+        {/* 4 Main Service Cards Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2"
+        >
           {services.map((service) => (
             <ServiceCard
               key={service.title}
@@ -105,39 +138,46 @@ export default function HomePage() {
               className="min-h-[200px]"
             />
           ))}
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10">
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5 space-y-2">
-            <div className="flex items-center gap-2 text-violet-400 font-bold text-xs">
+        {/* Highlights / Features Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10"
+        >
+          <div className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-violet-500/30 transition-all">
+            <div className="flex items-center gap-2 text-violet-400 font-bold text-xs uppercase tracking-wider">
               <Award className="w-4 h-4" />
               AI Score (0–100)
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 leading-relaxed">
               Real-time score judged by Gemini AI across persona, context, specificity, and constraints.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5 space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+          <div className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-emerald-500/30 transition-all">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
               <Zap className="w-4 h-4" />
               Dual LLM Output Compare
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 leading-relaxed">
               Run original vs refined prompts simultaneously and get an AI comparison of quality differences.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-white/5 space-y-2">
-            <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs">
+          <div className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-indigo-500/30 transition-all">
+            <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
               <Layers className="w-4 h-4" />
               Resizable Split View
             </div>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 leading-relaxed">
               Draggable divider handle between coach panel and score panel for custom workspace layout.
             </p>
           </div>
-        </div>
+        </motion.div>
+
       </div>
     </div>
   );
