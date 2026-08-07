@@ -84,7 +84,7 @@
   opacity: 0;
   pointer-events: none;
   transform: translateY(8px) scale(0.95);
-  transition: opacity 0.3s ease 1s, transform 0.3s ease 1s, visibility 0s 1.3s;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 2147483647;
 }
 
@@ -98,13 +98,11 @@
   background: transparent;
 }
 
-#pm-fab:hover .pm-fab-hover-card,
-#pm-fab.pm-hover-active .pm-fab-hover-card,
+#pm-fab.pm-hover-open .pm-fab-hover-card,
 .pm-fab-hover-card:hover {
   opacity: 1;
   pointer-events: all;
   transform: translateY(0) scale(1);
-  transition: opacity 0.2s ease 0s, transform 0.2s ease 0s;
 }
 
 .pm-hover-header {

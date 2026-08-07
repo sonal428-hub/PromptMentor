@@ -143,36 +143,53 @@
 
     setupDragging(fab);
 
-    function keepHover() {
-      if (hoverTimer) {
-        clearTimeout(hoverTimer);
-        hoverTimer = null;
-      }
-      fab.classList.add('pm-hover-active');
+    const hoverCard = fab.querySelector('.pm-fab-hover-card');
+
+    function closeHoverCard() {
+      if (hoverTimer) clearTimeout(hoverTimer);
+      hoverTimer = null;
+      fab.classList.remove('pm-hover-open');
     }
 
-    function scheduleLeave() {
+    function openHoverCard() {
       if (hoverTimer) clearTimeout(hoverTimer);
+      fab.classList.add('pm-hover-open');
+
       hoverTimer = setTimeout(() => {
-        fab.classList.remove('pm-hover-active');
-        hoverTimer = null;
+        if (!hoverCard.matches(':hover')) {
+          closeHoverCard();
+        }
       }, 1000);
     }
 
-    fab.addEventListener('mouseenter', keepHover);
-    fab.addEventListener('mouseleave', scheduleLeave);
+    fab.addEventListener('mouseenter', openHoverCard);
+
+    fab.addEventListener('mouseleave', () => {
+      setTimeout(() => {
+        if (!fab.matches(':hover') && !hoverCard.matches(':hover')) {
+          closeHoverCard();
+        }
+      }, 150);
+    });
+
+    if (hoverCard) {
+      hoverCard.addEventListener('mouseleave', closeHoverCard);
+    }
 
     fab.addEventListener('click', (e) => {
       if (dragHasMoved) return;
       if (e.target.closest('#pm-quick-overwrite-btn')) {
+        closeHoverCard();
         handleQuickOverwrite();
         return;
       }
+      closeHoverCard();
       handleAnalyze();
     });
 
     fab.addEventListener('contextmenu', (e) => {
       e.preventDefault();
+      closeHoverCard();
       handleAnalyze();
     });
 
