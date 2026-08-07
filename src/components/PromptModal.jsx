@@ -129,6 +129,68 @@ export default function PromptModal({ isOpen, onClose, type, data, userPrompt, o
             )}
           </div>
         )}
+
+        {type === 'compare' && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+              <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/30">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-100 font-heading">Live LLM Output Comparison</h3>
+                <p className="text-xs text-gray-400">Side-by-side output evaluation: Original vs Refined Prompt</p>
+              </div>
+            </div>
+
+            {data.isComparing ? (
+              <div className="p-8 text-center space-y-3 bg-slate-950/80 rounded-2xl border border-violet-500/20">
+                <div className="w-8 h-8 mx-auto rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+                <p className="text-xs text-violet-300 font-semibold animate-pulse">Running live LLM inferences & generating comparative analysis...</p>
+              </div>
+            ) : data.comparisonResult ? (
+              <div className="space-y-5 max-h-[60vh] overflow-y-auto pr-1">
+                {/* Side-by-Side Outputs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Original Output */}
+                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-white/10 space-y-2">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Original Prompt Output</span>
+                    <div className="text-xs text-slate-300 font-mono leading-relaxed max-h-[220px] overflow-y-auto p-3 rounded-xl bg-slate-900/80 border border-white/5 whitespace-pre-wrap">
+                      {data.comparisonResult.originalOutput || 'No output generated.'}
+                    </div>
+                  </div>
+
+                  {/* Refined Output */}
+                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-violet-500/30 space-y-2">
+                    <span className="text-xs font-bold text-violet-300 uppercase tracking-wider">Refined Prompt Output</span>
+                    <div className="text-xs text-slate-200 font-mono leading-relaxed max-h-[220px] overflow-y-auto p-3 rounded-xl bg-slate-900/80 border border-violet-500/20 whitespace-pre-wrap">
+                      {data.comparisonResult.improvedOutput || 'No output generated.'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Explanation */}
+                {data.comparisonResult.comparisonExplanation && (
+                  <div className="p-4 rounded-2xl bg-slate-950/90 border border-white/5 space-y-2">
+                    <h4 className="text-xs font-bold text-violet-300 uppercase tracking-wider">Quality Difference Analysis</h4>
+                    <div className="prose prose-invert prose-xs text-slate-300 leading-relaxed">
+                      <ReactMarkdown>{data.comparisonResult.comparisonExplanation}</ReactMarkdown>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-6 text-center space-y-3 bg-slate-950/80 rounded-2xl border border-white/10">
+                <p className="text-xs text-gray-400">Click "Run Comparison" to generate side-by-side outputs.</p>
+                <button
+                  onClick={data.onCompare}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-lg shadow-violet-500/30"
+                >
+                  Run Comparison Now
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

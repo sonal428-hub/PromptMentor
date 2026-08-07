@@ -114,120 +114,133 @@ export default function ImprovePage({
         explanation: aiScoreResult?.explanation || dynamicCoachAdvice
       };
     }
+    if (modalType === 'compare') {
+      return {
+        comparisonResult,
+        isComparing,
+        onCompare
+      };
+    }
     return null;
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-slate-950 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-      <div className="max-w-7xl mx-auto space-y-8 pb-12">
+    <div className="h-[calc(100vh-65px)] bg-slate-950 p-3 sm:p-4 lg:p-5 flex flex-col justify-between overflow-hidden">
+      <div className="max-w-7xl mx-auto w-full h-full flex flex-col justify-between space-y-3">
         
-        {/* Top Centered Heading */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl sm:text-5xl font-black font-heading tracking-tight bg-gradient-to-r from-white via-violet-200 to-indigo-300 bg-clip-text text-transparent drop-shadow-md">
+        {/* Compact Centered Top Heading */}
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-black font-heading tracking-tight bg-gradient-to-r from-white via-violet-200 to-indigo-300 bg-clip-text text-transparent drop-shadow-md">
             Prompt Improvement
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto font-sans opacity-90">
-            Realtime score analysis, 6-pillar engineering checklist, live AI coach advice & dual LLM evaluation
+          <p className="text-xs text-slate-300 max-w-xl mx-auto font-sans opacity-90">
+            Realtime score analysis, live AI coach advice & dual LLM evaluation
           </p>
         </div>
 
-        {/* Big Main Box Divided into 2 Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 glass-panel p-6 border-violet-500/20 shadow-2xl rounded-3xl bg-slate-900/50 backdrop-blur-xl">
+        {/* Main Glass Dashboard Box */}
+        <div className="flex-1 glass-panel p-4 sm:p-5 border-violet-500/20 shadow-2xl rounded-3xl bg-slate-900/50 backdrop-blur-xl flex flex-col justify-between gap-4 overflow-hidden">
           
-          {/* SECTION 1: Realtime Score (Heuristic Score) */}
-          <div className="space-y-6 flex flex-col justify-between">
-            <div className="space-y-5">
-              {/* Section Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
-                    <Award className="w-5 h-5" />
+          {/* Top Grid: Left (Realtime Score) & Right (AI Score) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0 overflow-y-auto">
+            
+            {/* SECTION 1: Realtime Score (Left Side) */}
+            <div className="space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                {/* Section Header */}
+                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                      <Award className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-gray-100 font-heading">Realtime Score</h2>
+                      <p className="text-[11px] text-gray-400">Live client-side prompt analysis</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-base font-bold text-gray-100 font-heading">Realtime Score</h2>
-                    <p className="text-xs text-gray-400">Live client-side prompt analysis</p>
+                  <span className="text-xs font-mono font-bold text-violet-300 bg-violet-500/10 px-2.5 py-0.5 rounded-lg border border-violet-500/20">
+                    {(heuristic.overallScore / 10).toFixed(1)} / 10
+                  </span>
+                </div>
+
+                {/* Horizontal Score Progress Meter */}
+                <div className="space-y-1.5 p-3 rounded-2xl bg-slate-950/80 border border-white/5 shadow-inner">
+                  <div className="flex justify-between text-xs text-gray-300 font-medium">
+                    <span className="font-semibold text-slate-200">Score Progress Bar</span>
+                    <span className="font-mono font-bold text-violet-400">{heuristic.overallScore}%</span>
+                  </div>
+                  <div className="w-full h-3 rounded-full bg-slate-900 border border-white/10 overflow-hidden p-0.5 shadow-inner">
+                    <div
+                      className="h-full rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-violet-600 via-indigo-500 to-emerald-400 shadow-md"
+                      style={{ width: `${heuristic.overallScore}%` }}
+                    />
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold text-violet-300 bg-violet-500/10 px-3 py-1 rounded-xl border border-violet-500/20">
-                  {(heuristic.overallScore / 10).toFixed(1)} / 10
-                </span>
-              </div>
 
-              {/* Horizontal Score Meter */}
-              <div className="space-y-2 p-4 rounded-2xl bg-slate-950/80 border border-white/5 shadow-inner">
-                <div className="flex justify-between text-xs text-gray-300 font-medium">
-                  <span className="font-semibold text-slate-200">Score Progress Bar</span>
-                  <span className="font-mono font-bold text-violet-400">{heuristic.overallScore}%</span>
+                {/* Live Coach's Advice with 2 Popup Buttons */}
+                <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-violet-500/20 space-y-3 shadow-lg">
+                  <div className="flex items-center gap-2 text-violet-300 font-bold text-xs uppercase tracking-wider">
+                    <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
+                    Live Coach Advice
+                  </div>
+                  <p className="text-xs text-slate-300 italic leading-relaxed min-h-[36px]">
+                    {dynamicCoachAdvice}
+                  </p>
+
+                  {/* Two Action Popup Buttons */}
+                  <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2 border-t border-white/5">
+                    <button
+                      onClick={() => openModal('suggested')}
+                      className="w-full sm:flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-violet-500/25 transition-all active:scale-95"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Suggested Prompt
+                    </button>
+                    <button
+                      onClick={() => openModal('evaluation')}
+                      className="w-full sm:flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-gray-200 text-xs font-bold transition-all active:scale-95"
+                    >
+                      <Award className="w-3.5 h-3.5 text-emerald-400" />
+                      Prompt Evaluation
+                    </button>
+                  </div>
                 </div>
-                <div className="w-full h-4 rounded-full bg-slate-900 border border-white/10 overflow-hidden p-0.5 shadow-inner">
-                  <div
-                    className="h-full rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-violet-600 via-indigo-500 to-emerald-400 shadow-md"
-                    style={{ width: `${heuristic.overallScore}%` }}
-                  />
+
+                {/* Preset Prompts Selector */}
+                <div className="pt-1">
+                  <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
                 </div>
-              </div>
-
-              {/* Live Coach's Advice with 2 Popup Buttons at Bottom */}
-              <div className="p-4 rounded-2xl bg-slate-950/90 border border-violet-500/20 space-y-4 shadow-lg">
-                <div className="flex items-center gap-2 text-violet-300 font-bold text-xs uppercase tracking-wider">
-                  <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
-                  Live Coach Advice
-                </div>
-                <p className="text-xs text-slate-300 italic leading-relaxed min-h-[40px]">
-                  {dynamicCoachAdvice}
-                </p>
-
-                {/* Two Action Buttons near the ending */}
-                <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 border-t border-white/5">
-                  <button
-                    onClick={() => openModal('suggested')}
-                    className="w-full sm:flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-violet-500/25 transition-all active:scale-95"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    Suggested Prompt
-                  </button>
-                  <button
-                    onClick={() => openModal('evaluation')}
-                    className="w-full sm:flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-gray-200 text-xs font-bold transition-all active:scale-95"
-                  >
-                    <Award className="w-3.5 h-3.5 text-emerald-400" />
-                    Prompt Evaluation
-                  </button>
-                </div>
-              </div>
-
-              {/* Preset Prompts Quick Selector */}
-              <div className="pt-2">
-                <PresetPrompts onSelectPreset={(text) => setUserPrompt(text)} />
-              </div>
-
-              {/* Prompt Input Box at the end of Left Hand Side Section */}
-              <div className="pt-2">
-                <PromptInputBox
-                  value={userPrompt}
-                  onValueChange={setUserPrompt}
-                  onSend={() => {
-                    if (onCoax) onCoax();
-                  }}
-                  isLoading={isCoaxing}
-                  placeholder="Type or paste your prompt here to coach & optimize..."
-                />
               </div>
             </div>
+
+            {/* SECTION 2: AI Score Section (Right Side) */}
+            <div className="space-y-4 border-t lg:border-t-0 lg:border-l border-white/10 lg:pl-5 pt-4 lg:pt-0">
+              <ScoreRightPanel
+                coaxResult={coaxResult}
+                isCoaxing={isCoaxing}
+                comparisonResult={comparisonResult}
+                isComparing={isComparing}
+                compareError={compareError}
+                onCompare={onCompare}
+                aiScoreResult={aiScoreResult}
+                isAiScoreLoading={isAiScoreLoading}
+                aiScoreError={aiScoreError}
+                onOpenCompareModal={() => openModal('compare')}
+              />
+            </div>
+
           </div>
 
-          {/* SECTION 2: AI Score Section */}
-          <div className="space-y-5 border-t lg:border-t-0 lg:border-l border-white/10 lg:pl-6 pt-6 lg:pt-0">
-            <ScoreRightPanel
-              coaxResult={coaxResult}
-              isCoaxing={isCoaxing}
-              comparisonResult={comparisonResult}
-              isComparing={isComparing}
-              compareError={compareError}
-              onCompare={onCompare}
-              aiScoreResult={aiScoreResult}
-              isAiScoreLoading={isAiScoreLoading}
-              aiScoreError={aiScoreError}
+          {/* Symmetrical Full-Width Textbox Spanning Across Both Columns */}
+          <div className="w-full pt-3 border-t border-white/10">
+            <PromptInputBox
+              value={userPrompt}
+              onValueChange={setUserPrompt}
+              onSend={() => {
+                if (onCoax) onCoax();
+              }}
+              isLoading={isCoaxing}
+              placeholder="Type or paste your prompt here to coach & optimize..."
             />
           </div>
 
