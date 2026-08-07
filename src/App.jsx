@@ -77,8 +77,6 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white font-sans">
       <Header
-        apiKey={apiKey}
-        onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
       />
 

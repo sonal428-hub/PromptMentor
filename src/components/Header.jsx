@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Key, BookOpen, Target, GraduationCap, Trophy, LineChart, Home, Sparkles } from 'lucide-react';
+import { BookOpen, Target, GraduationCap, Trophy, LineChart, Home, Sparkles } from 'lucide-react';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 
-export default function Header({ apiKey, onOpenApiKeyModal, onOpenFlashcards }) {
+export default function Header({ onOpenFlashcards }) {
   const location = useLocation();
 
   const navItems = [
@@ -13,7 +13,7 @@ export default function Header({ apiKey, onOpenApiKeyModal, onOpenFlashcards }) 
     { label: 'Track Progress', path: '/progress', icon: LineChart },
   ];
 
-  const hasKey = apiKey || import.meta.env?.VITE_API_KEY;
+
 
   return (
     <header className="w-full border-b border-white/10 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between gap-4 shadow-xl shadow-slate-950/50">
@@ -76,21 +76,6 @@ export default function Header({ apiKey, onOpenApiKeyModal, onOpenFlashcards }) 
         >
           <BookOpen className="w-4 h-4 text-violet-400" />
           <span className="hidden sm:inline text-gray-200 font-medium">Flashcards</span>
-        </ButtonColorful>
-
-        <ButtonColorful
-          onClick={onOpenApiKeyModal}
-          className={`h-9 px-3.5 ${
-            hasKey
-              ? 'border-emerald-500/40 hover:border-emerald-500/70 bg-emerald-500/5'
-              : 'border-amber-500/40 hover:border-amber-500/70 bg-amber-500/5'
-          }`}
-        >
-          <Key className={`w-4 h-4 ${hasKey ? 'text-emerald-400' : 'text-amber-400'}`} />
-          <span className="hidden sm:inline text-gray-200 font-medium">
-            {hasKey ? 'Gemini Active' : 'Set API Key'}
-          </span>
-          <span className={`w-2 h-2 rounded-full ${hasKey ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
         </ButtonColorful>
       </div>
     </header>
