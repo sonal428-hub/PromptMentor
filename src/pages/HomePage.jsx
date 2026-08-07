@@ -1,62 +1,55 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Target, GraduationCap, Trophy, LineChart, ArrowRight, ShieldCheck, Zap, Layers, Award } from 'lucide-react';
+import { Sparkles, Award, Zap, Layers } from 'lucide-react';
+import { ServiceCard } from '@/components/ui/service-card';
 
 export default function HomePage() {
   const navigate = useNavigate();
 
-  const navCards = [
+  const services = [
     {
-      id: 'improve',
-      title: 'Prompt Improve',
-      badge: 'Main Feature',
-      path: '/improve',
-      icon: Target,
-      color: 'from-violet-600 via-indigo-600 to-emerald-500',
-      description: 'Collaborative AI prompt coach with draggable split panels, live AI quality score (0–100), specificity meter, concept checklist, and dual LLM output comparison.',
-      isPrimary: true,
-      actionText: 'Launch Coaching Workbench'
+      title: "Prompt Improve",
+      href: "/improve",
+      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-DFiJBJyUFg9QYTZOWEFeeza18HBnty.png&w=320&q=75",
+      imgAlt: "AI Prompt Workbench Illustration",
+      variant: "purple",
+      badge: "Main Feature",
+      description: "Collaborative AI prompt coach with draggable split panels, live AI quality score (0–100), specificity meter, and dual LLM output comparison."
     },
     {
-      id: 'learn',
-      title: 'Learn Prompting',
-      badge: 'Interactive Modules',
-      path: '/learn',
-      icon: GraduationCap,
-      color: 'from-indigo-600 to-blue-500',
-      description: 'Master prompt engineering fundamentals through step-by-step interactive flashcards, progressive disclosure cards, and real-world prompt examples.',
-      isPrimary: false,
-      actionText: 'Start Learning'
+      title: "Learn Prompting",
+      href: "/learn",
+      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-SxvnIpN2RVwLK77XxK3MnVCU6Xgc29.png&w=320&q=75",
+      imgAlt: "Paint bucket illustration",
+      variant: "blue",
+      badge: "Interactive Modules",
+      description: "Master prompt engineering fundamentals through step-by-step interactive flashcards, progressive disclosure cards, and real-world prompt examples."
     },
     {
-      id: 'leaderboard',
-      title: 'Leaderboard',
-      badge: 'Community',
-      path: '/leaderboard',
-      icon: Trophy,
-      color: 'from-amber-500 to-orange-600',
-      description: 'Explore high-scoring prompts crafted by the community, categorized by domain, quality score, and precision benchmarks.',
-      isPrimary: false,
-      actionText: 'View Leaderboard'
+      title: "Leaderboard",
+      href: "/leaderboard",
+      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-J7XYh5Cix5CceVeAtkuVXYSGgrhjDL.png&w=320&q=75",
+      imgAlt: "Megaphone illustration",
+      variant: "gray",
+      badge: "Community",
+      description: "Explore high-scoring prompts crafted by the community, categorized by domain, quality score, and precision benchmarks."
     },
     {
-      id: 'progress',
-      title: 'Track Progress',
-      badge: 'Analytics',
-      path: '/progress',
-      icon: LineChart,
-      color: 'from-emerald-500 to-teal-600',
-      description: 'Review your personal prompt improvement radar, historical score deltas, specificity metrics, and shareable prompt glow-up cards.',
-      isPrimary: false,
-      actionText: 'View Analytics'
-    }
+      title: "Track Progress",
+      href: "/progress",
+      imgSrc: "https://www.thiings.co/_next/image?url=https%3A%2F%2Flftz25oez4aqbxpq.public.blob.vercel-storage.com%2Fimage-nY3Stc1545aP21dAi1IEbYlnc4rovS.png&w=320&q=75",
+      imgAlt: "Notebook and pen illustration",
+      variant: "emerald",
+      badge: "Analytics",
+      description: "Review your personal prompt improvement radar, historical score deltas, specificity metrics, and shareable prompt glow-up cards."
+    },
   ];
 
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-slate-950 text-gray-100 p-6 lg:p-12 space-y-12 max-w-7xl mx-auto">
+    <div className="min-h-[calc(100vh-65px)] bg-slate-950 text-gray-100 p-6 lg:p-12 space-y-10 max-w-7xl mx-auto">
 
       {/* Hero Section */}
-      <div className="text-center space-y-5 max-w-3xl mx-auto pt-6">
+      <div className="text-center space-y-4 max-w-3xl mx-auto pt-4">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold">
           <Sparkles className="w-3.5 h-3.5 text-violet-400 animate-pulse" />
           <span>Real-Time Collaborative Prompt Engineering</span>
@@ -71,53 +64,22 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* 4 Main Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-        {navCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={card.id}
-              onClick={() => navigate(card.path)}
-              className={`group cursor-pointer rounded-2xl p-6 sm:p-8 transition-all duration-300 relative overflow-hidden flex flex-col justify-between space-y-6 ${
-                card.isPrimary
-                  ? 'glass-panel-glow border-violet-500/40 hover:border-violet-500 hover:shadow-[0_0_30px_rgba(139,92,246,0.25)]'
-                  : 'glass-panel border-white/10 hover:border-white/20 hover:bg-slate-900/60'
-              }`}
-            >
-              {/* Card Header */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${card.color} text-white shadow-lg`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <span className={`text-xs px-3 py-1 rounded-full font-bold border ${
-                    card.isPrimary
-                      ? 'bg-violet-500/20 text-violet-300 border-violet-500/30'
-                      : 'bg-white/5 text-gray-400 border-white/10'
-                  }`}>
-                    {card.badge}
-                  </span>
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-bold text-gray-100 font-heading group-hover:text-violet-300 transition-colors">
-                    {card.title}
-                  </h2>
-                  <p className="text-xs sm:text-sm text-gray-400 mt-2 leading-relaxed">
-                    {card.description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-bold text-violet-400 group-hover:text-violet-300">
-                <span>{card.actionText}</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-          );
-        })}
+      {/* 4 Main Service Cards Grid with Framer Motion animations */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+        {services.map((service) => (
+          <ServiceCard
+            key={service.title}
+            title={service.title}
+            href={service.href}
+            imgSrc={service.imgSrc}
+            imgAlt={service.imgAlt}
+            variant={service.variant}
+            badge={service.badge}
+            description={service.description}
+            onClick={() => navigate(service.href)}
+            className="min-h-[200px]"
+          />
+        ))}
       </div>
 
       {/* Highlights / Features Banner */}
