@@ -1,155 +1,169 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
 import Header from './components/Header';
-import ApiKeyModal from './components/ApiKeyModal';
+import PresetPrompts from './components/PresetPrompts';
+import PromptEditor from './components/PromptEditor';
+import AIGradeScore from './components/AIGradeScore';
+import PromptDiffComparison from './components/PromptDiffComparison';
+import OutputComparison from './components/OutputComparison';
 import EducationalFlashcards from './components/EducationalFlashcards';
-
-import HomePage from './pages/HomePage';
-import ImprovePage from './pages/ImprovePage';
-import LearnPage from './pages/LearnPage';
-import LeaderboardPage from './pages/LeaderboardPage';
-import ProgressPage from './pages/ProgressPage';
-
-import { coaxAnalyze, comparePromptOutputs, getEffectiveApiKey } from './utils/geminiApi';
+import ApiKeyModal from './components/ApiKeyModal';
+import { analyzePrompt } from './utils/promptAnalyzer';
+import { generateLLMResponse } from './utils/geminiApi';
+import confetti from 'canvas-confetti';
 
 export default function App() {
-  // ── Global State ──
-  const [userPrompt, setUserPrompt] = useState('');
+  const [userPrompt, setUserPrompt] = useState('help me fix my code error');
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
-
-  // ── Modals State ──
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
 
-  // ── API Call 1: Coax Analysis ──
-  const [coaxResult, setCoaxResult] = useState(null);
-  const [isCoaxing, setIsCoaxing] = useState(false);
-  const [coaxError, setCoaxError] = useState('');
+  const [activePreset, setActivePreset] = useState(null);
 
-  // ── API Call 2: Comparison ──
-  const [comparisonResult, setComparisonResult] = useState(null);
-  const [isComparing, setIsComparing] = useState(false);
-  const [compareError, setCompareError] = useState('');
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [rawOutput, setRawOutput] = useState('');
+  const [enhancedOutput, setEnhancedOutput] = useState('');
 
-  // Save API key
+  const analysis = useMemo(() => {
+    return analyzePrompt(userPrompt);
+  }, [userPrompt]);
+
+  useEffect(() => {
+    if (analysis.overallScore === 100) {
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+  }, [analysis.overallScore]);
+
+  const handleSelectPreset = (preset) => {
+    setActivePreset(preset);
+    setUserPrompt(preset.prompt);
+    setRawOutput('');
+    setEnhancedOutput('');
+  };
+
+  const handleApplySuggestedPrompt = () => {
+    if (analysis.suggestedPrompt) {
+      setUserPrompt(analysis.suggestedPrompt);
+    }
+  };
+
   const handleSaveApiKey = (key) => {
     setApiKey(key);
     localStorage.setItem('gemini_api_key', key);
   };
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Coax Handler (API Call 1)
-  // ═══════════════════════════════════════════════════════════════════════════
-  const handleCoax = async () => {
+  // Run Dual LLM Output Comparison
+  const handleRunComparison = async () => {
     if (!userPrompt.trim()) return;
+    setIsExecuting(true);
 
-    setIsCoaxing(true);
-    setCoaxError('');
-    setCoaxResult(null);
-    setComparisonResult(null);
-
-    try {
-      const result = await coaxAnalyze(userPrompt, apiKey);
-      setCoaxResult(result);
-    } catch (err) {
-      setCoaxError(err.message || 'Analysis failed. Please check your API key.');
-      console.error('Coax API call failed:', err);
-    } finally {
-      setIsCoaxing(false);
-    }
-  };
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Compare Handler (API Call 2)
-  // ═══════════════════════════════════════════════════════════════════════════
-  const handleCompare = async () => {
-    if (!coaxResult?.finalPrompt) return;
-
-    setIsComparing(true);
-    setCompareError('');
+    const mockRaw = activePreset?.prompt === userPrompt ? activePreset.mockRawResponse : '';
+    const mockEnhanced = activePreset?.prompt === userPrompt ? activePreset.mockEnhancedResponse : '';
 
     try {
-      const result = await comparePromptOutputs(
-        coaxResult.originalPrompt,
-        coaxResult.finalPrompt,
-        apiKey
-      );
-      setComparisonResult(result);
+      const [resRaw, resEnhanced] = await Promise.all([
+        generateLLMResponse({
+          prompt: userPrompt,
+          apiKey,
+          isEnhanced: false,
+          mockFallback: mockRaw
+        }),
+        generateLLMResponse({
+          prompt: analysis.suggestedPrompt || userPrompt,
+          apiKey,
+          isEnhanced: true,
+          mockFallback: mockEnhanced
+        })
+      ]);
+
+      setRawOutput(resRaw);
+      setEnhancedOutput(resEnhanced);
     } catch (err) {
-      setCompareError(err.message || 'Comparison failed.');
-      console.error('Compare API call failed:', err);
+      console.error('Execution error:', err);
     } finally {
-      setIsComparing(false);
+      setIsExecuting(false);
     }
-  };
-
-  const handleUseSuggestedPrompt = () => {
-    if (coaxResult?.finalPrompt) {
-      setUserPrompt(coaxResult.finalPrompt);
-    }
-  };
-
-  const handleDismiss = () => {
-    setCoaxResult(null);
-    setComparisonResult(null);
   };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-slate-950 text-gray-100 font-sans flex flex-col selection:bg-violet-500 selection:text-white">
-        {/* Navigation Header */}
-        <Header
-          apiKey={apiKey}
-          onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
-          onOpenFlashcards={() => setIsFlashcardsOpen(true)}
-        />
+    <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white">
+      {/* Top Header */}
+      <Header
+        apiKey={apiKey}
+        onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)}
+        onOpenFlashcards={() => setIsFlashcardsOpen(true)}
+      />
 
-        {/* Page Content Routes */}
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route
-              path="/improve"
-              element={
-                <ImprovePage
-                  userPrompt={userPrompt}
-                  setUserPrompt={setUserPrompt}
-                  coaxResult={coaxResult}
-                  isCoaxing={isCoaxing}
-                  coaxError={coaxError}
-                  onCoax={handleCoax}
-                  onUseSuggestedPrompt={handleUseSuggestedPrompt}
-                  onDismiss={handleDismiss}
-                  comparisonResult={comparisonResult}
-                  isComparing={isComparing}
-                  compareError={compareError}
-                  onCompare={handleCompare}
-                  apiKey={apiKey}
-                />
-              }
-            />
-            <Route
-              path="/learn"
-              element={<LearnPage onOpenFlashcards={() => setIsFlashcardsOpen(true)} />}
-            />
-            <Route path="/leaderboard" element={<LeaderboardPage />} />
-            <Route path="/progress" element={<ProgressPage coaxResult={coaxResult} />} />
-          </Routes>
-        </main>
+      {/* Main Container */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col justify-between">
+        <div>
+          {/* Quick Presets row */}
+          <PresetPrompts onSelectPreset={handleSelectPreset} />
 
-        {/* Global Modals */}
-        <ApiKeyModal
-          isOpen={isApiKeyModalOpen}
-          onClose={() => setIsApiKeyModalOpen(false)}
-          apiKey={apiKey}
-          onSaveApiKey={handleSaveApiKey}
-        />
+          {/* 3-Column Core Workbench (Modules 2, 3, 4) */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch mb-6">
+            {/* Module 2: Prompt Editor Space & Progressive Disclosure */}
+            <div className="lg:col-span-1">
+              <PromptEditor
+                userPrompt={userPrompt}
+                onChangePrompt={setUserPrompt}
+                analysis={analysis}
+                onRunComparison={handleRunComparison}
+                isExecuting={isExecuting}
+              />
+            </div>
 
-        <EducationalFlashcards
-          isOpen={isFlashcardsOpen}
-          onClose={() => setIsFlashcardsOpen(false)}
-        />
-      </div>
-    </Router>
+            {/* Module 3: AI Grade Score Gauge */}
+            <div className="lg:col-span-1">
+              <AIGradeScore analysis={analysis} />
+            </div>
+
+            {/* Module 4: Suggestion Comparison & Diff Badges */}
+            <div className="lg:col-span-1">
+              <PromptDiffComparison
+                analysis={analysis}
+                onApplySuggestedPrompt={handleApplySuggestedPrompt}
+                onOpenFlashcards={() => setIsFlashcardsOpen(true)}
+              />
+            </div>
+          </div>
+
+          {/* Module 1: Prompt's Actual Output Dual Workbench */}
+          <OutputComparison
+            rawOutput={rawOutput}
+            enhancedOutput={enhancedOutput}
+            isExecuting={isExecuting}
+            userPrompt={userPrompt}
+            suggestedPrompt={analysis.suggestedPrompt}
+            onRunComparison={handleRunComparison}
+          />
+        </div>
+
+        {/* Footer */}
+        <footer className="w-full mt-12 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-gray-400 gap-4">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-gray-300">PromptMentor</span>
+            <span>• PS05 Collaborative Prompting Hackathon Edition</span>
+          </div>
+          <p className="text-gray-400">Designed to educate users through real-time feedback & progressive disclosure.</p>
+        </footer>
+      </main>
+
+      {/* Modals */}
+      <EducationalFlashcards
+        isOpen={isFlashcardsOpen}
+        onClose={() => setIsFlashcardsOpen(false)}
+      />
+
+      <ApiKeyModal
+        isOpen={isApiKeyModalOpen}
+        onClose={() => setIsApiKeyModalOpen(false)}
+        apiKey={apiKey}
+        onSaveApiKey={handleSaveApiKey}
+      />
+    </div>
   );
 }
