@@ -141,13 +141,14 @@ export default function ImprovePage({
         {/* Main Glass Dashboard Box */}
         <div className="flex-1 glass-panel p-4 sm:p-5 border-violet-500/20 shadow-2xl rounded-3xl bg-slate-900/50 backdrop-blur-xl flex flex-col justify-between gap-4 overflow-hidden">
           
-          {/* Top Grid: Left (Realtime Score) & Right (AI Score) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0 overflow-y-auto">
+          {/* Top Grid: Left (Realtime Score) & Right (AI Score) - Completely Symmetrical */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 flex-1 min-h-0 overflow-hidden">
             
             {/* SECTION 1: Realtime Score (Left Side) */}
-            <div className="space-y-4 flex flex-col justify-between">
-              <div className="space-y-3">
-                {/* Section Header */}
+            <div className="space-y-3 flex flex-col justify-between h-full overflow-hidden">
+              
+              {/* Card 1: Realtime Score Meter */}
+              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-white/5 space-y-3 shadow-inner">
                 <div className="flex items-center justify-between pb-2 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
@@ -164,53 +165,55 @@ export default function ImprovePage({
                 </div>
 
                 {/* Horizontal Score Progress Meter */}
-                <div className="space-y-1.5 p-3 rounded-2xl bg-slate-950/80 border border-white/5 shadow-inner">
+                <div className="space-y-1.5 p-3 rounded-xl bg-slate-900/60 border border-white/5">
                   <div className="flex justify-between text-xs text-gray-300 font-medium">
-                    <span className="font-semibold text-slate-200">Score Progress Bar</span>
+                    <span className="font-semibold text-slate-200">Score Progress</span>
                     <span className="font-mono font-bold text-violet-400">{heuristic.overallScore}%</span>
                   </div>
-                  <div className="w-full h-3 rounded-full bg-slate-900 border border-white/10 overflow-hidden p-0.5 shadow-inner">
+                  <div className="w-full h-3 rounded-full bg-slate-950 border border-white/10 overflow-hidden p-0.5 shadow-inner">
                     <div
                       className="h-full rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-violet-600 via-indigo-500 to-emerald-400 shadow-md"
                       style={{ width: `${heuristic.overallScore}%` }}
                     />
                   </div>
                 </div>
+              </div>
 
-                {/* Live Coach's Advice with 2 Popup Buttons */}
-                <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-violet-500/20 space-y-3 shadow-lg">
+              {/* Card 2: Live Coach Advice with 2 Popup Buttons */}
+              <div className="p-3.5 rounded-2xl bg-slate-950/90 border border-violet-500/20 space-y-3 shadow-lg flex-1 flex flex-col justify-between">
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 text-violet-300 font-bold text-xs uppercase tracking-wider">
                     <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
                     Live Coach Advice
                   </div>
-                  <p className="text-xs text-slate-300 italic leading-relaxed min-h-[36px]">
+                  <p className="text-xs text-slate-300 italic leading-relaxed min-h-[36px] line-clamp-2">
                     {dynamicCoachAdvice}
                   </p>
-
-                  {/* Two Action Popup Buttons */}
-                  <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2 border-t border-white/5">
-                    <button
-                      onClick={() => openModal('suggested')}
-                      className="w-full sm:flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-violet-500/25 transition-all active:scale-95"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      Suggested Prompt
-                    </button>
-                    <button
-                      onClick={() => openModal('evaluation')}
-                      className="w-full sm:flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-gray-200 text-xs font-bold transition-all active:scale-95"
-                    >
-                      <Award className="w-3.5 h-3.5 text-emerald-400" />
-                      Prompt Evaluation
-                    </button>
-                  </div>
                 </div>
 
+                {/* Two Action Popup Buttons */}
+                <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2 border-t border-white/5">
+                  <button
+                    onClick={() => openModal('suggested')}
+                    className="w-full sm:flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-violet-500/25 transition-all active:scale-95"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Suggested Prompt
+                  </button>
+                  <button
+                    onClick={() => openModal('evaluation')}
+                    className="w-full sm:flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-gray-200 text-xs font-bold transition-all active:scale-95"
+                  >
+                    <Award className="w-3.5 h-3.5 text-emerald-400" />
+                    Prompt Evaluation
+                  </button>
+                </div>
               </div>
+
             </div>
 
             {/* SECTION 2: AI Score Section (Right Side) */}
-            <div className="space-y-4 border-t lg:border-t-0 lg:border-l border-white/10 lg:pl-5 pt-4 lg:pt-0">
+            <div className="border-t lg:border-t-0 lg:border-l border-white/10 lg:pl-5 pt-4 lg:pt-0 h-full overflow-hidden">
               <ScoreRightPanel
                 coaxResult={coaxResult}
                 isCoaxing={isCoaxing}
