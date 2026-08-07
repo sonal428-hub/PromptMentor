@@ -7,10 +7,23 @@
       getText: (el) => el.innerText || el.textContent || '',
       setText: (el, text) => {
         el.focus();
+        try {
+          const sel = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          document.execCommand('delete', false, null);
+        } catch (e) {}
+        el.innerHTML = '';
         const dt = new DataTransfer();
         dt.setData('text/plain', text);
-        document.execCommand('selectAll', false, null);
-        el.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+        const pasteEvent = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+        el.dispatchEvent(pasteEvent);
+        if (!el.innerText || !el.innerText.trim()) {
+          el.innerText = text;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
     },
     'chat.openai.com': {
@@ -18,10 +31,23 @@
       getText: (el) => el.innerText || el.textContent || '',
       setText: (el, text) => {
         el.focus();
+        try {
+          const sel = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          document.execCommand('delete', false, null);
+        } catch (e) {}
+        el.innerHTML = '';
         const dt = new DataTransfer();
         dt.setData('text/plain', text);
-        document.execCommand('selectAll', false, null);
-        el.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+        const pasteEvent = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+        el.dispatchEvent(pasteEvent);
+        if (!el.innerText || !el.innerText.trim()) {
+          el.innerText = text;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
     },
     'claude.ai': {
@@ -29,10 +55,23 @@
       getText: (el) => el.innerText || el.textContent || '',
       setText: (el, text) => {
         el.focus();
+        try {
+          const sel = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          document.execCommand('delete', false, null);
+        } catch (e) {}
+        el.innerHTML = '';
         const dt = new DataTransfer();
         dt.setData('text/plain', text);
-        document.execCommand('selectAll', false, null);
-        el.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+        const pasteEvent = new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true });
+        el.dispatchEvent(pasteEvent);
+        if (!el.innerText || !el.innerText.trim()) {
+          el.innerText = text;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
     },
     'gemini.google.com': {
@@ -40,7 +79,9 @@
       getText: (el) => el.innerText || el.textContent || '',
       setText: (el, text) => {
         el.focus();
-        el.innerHTML = `<p>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`;
+        el.innerHTML = '';
+        const paragraphs = text.split('\n').map(line => `<p>${line.replace(/</g, '&lt;').replace(/>/g, '&gt;') || '<br>'}</p>`).join('');
+        el.innerHTML = paragraphs;
         el.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
@@ -54,6 +95,10 @@
   let panel = null;
   let currentEditor = null;
   let isAnalyzing = false;
+  let isDragging = false;
+  let dragHasMoved = false;
+  let startX = 0, startY = 0, initialLeft = 0, initialTop = 0;
+  let userHasCustomPos = false;
 
   function getScoreColor(val) {
     if (val >= 85) return '#10b981';
@@ -73,25 +118,138 @@
     if (fab) return;
     fab = document.createElement('div');
     fab.id = 'pm-fab';
+    fab.title = 'Drag to move • Right-click or click for full score';
     fab.innerHTML = `
       <div class="pm-fab-inner">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
         </svg>
+        <span class="pm-fab-badge"></span>
       </div>
-      <div class="pm-fab-tooltip">Analyze with PromptMentor</div>
+      <div class="pm-fab-hover-card">
+        <div class="pm-hover-header">
+          <span class="pm-hover-sparkle">✨</span>
+          <span>PromptMentor AI</span>
+        </div>
+        <div class="pm-hover-desc">Prompt improvement detected!</div>
+        <button class="pm-quick-btn" id="pm-quick-overwrite-btn">
+          ⚡ One-Click Refine & Overwrite
+        </button>
+        <div class="pm-hover-sub">Right-click or click icon for full score breakdown</div>
+      </div>
     `;
-    fab.addEventListener('click', handleAnalyze);
+
+    setupDragging(fab);
+
+    fab.addEventListener('click', (e) => {
+      if (dragHasMoved) return;
+      if (e.target.closest('#pm-quick-overwrite-btn')) {
+        handleQuickOverwrite();
+        return;
+      }
+      handleAnalyze();
+    });
+
+    fab.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      handleAnalyze();
+    });
+
     document.body.appendChild(fab);
   }
 
+  function setupDragging(element) {
+    element.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      if (e.target.closest('#pm-quick-overwrite-btn')) return;
+
+      isDragging = true;
+      dragHasMoved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      const rect = element.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+
+      function onMouseMove(moveEvent) {
+        const dx = moveEvent.clientX - startX;
+        const dy = moveEvent.clientY - startY;
+
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+          dragHasMoved = true;
+          userHasCustomPos = true;
+          element.style.left = `${initialLeft + dx}px`;
+          element.style.top = `${initialTop + dy}px`;
+          element.style.right = 'auto';
+          element.style.bottom = 'auto';
+
+          if (panel && panel.classList.contains('pm-panel-visible')) {
+            positionPanelNextToFAB();
+          }
+        }
+      }
+
+      function onMouseUp() {
+        isDragging = false;
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+      }
+
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+    });
+  }
+
   function positionFAB(editor) {
-    if (!fab || !editor) return;
+    if (!fab || !editor || userHasCustomPos) return;
     const rect = editor.getBoundingClientRect();
     fab.style.position = 'fixed';
-    fab.style.top = `${rect.top + 8}px`;
-    fab.style.left = `${rect.right - 50}px`;
+    fab.style.top = `${Math.max(10, rect.top + 8)}px`;
+    fab.style.left = `${Math.min(window.innerWidth - 60, rect.right - 50)}px`;
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
     fab.style.zIndex = '2147483647';
+  }
+
+  function checkInputAndGlow() {
+    const editor = adapter.getEditor();
+    if (!editor || !fab) return;
+    const text = adapter.getText(editor).trim();
+    if (text.length >= 6) {
+      fab.classList.add('pm-fab-glowing');
+    } else {
+      fab.classList.remove('pm-fab-glowing');
+    }
+  }
+
+  function positionPanelNextToFAB() {
+    if (!panel || !fab) return;
+    const fabRect = fab.getBoundingClientRect();
+    const panelWidth = 340;
+    const gap = 8;
+
+    let left = fabRect.left - panelWidth - gap;
+    if (left < 10) {
+      left = fabRect.right + gap;
+    }
+
+    if (left + panelWidth > window.innerWidth - 10) {
+      left = window.innerWidth - panelWidth - 10;
+    }
+
+    let top = fabRect.top;
+    const panelHeight = Math.min(window.innerHeight * 0.8, 520);
+    if (top + panelHeight > window.innerHeight - 10) {
+      top = window.innerHeight - panelHeight - 10;
+    }
+    if (top < 10) top = 10;
+
+    panel.style.position = 'fixed';
+    panel.style.left = `${left}px`;
+    panel.style.top = `${top}px`;
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+    panel.style.transform = 'none';
   }
 
   function createPanel() {
@@ -100,6 +258,7 @@
     panel.id = 'pm-panel';
     panel.className = 'pm-panel';
     document.body.appendChild(panel);
+    positionPanelNextToFAB();
     return panel;
   }
 
@@ -120,6 +279,7 @@
     `;
     p.querySelector('#pm-close').addEventListener('click', closePanel);
     p.classList.add('pm-panel-visible');
+    positionPanelNextToFAB();
   }
 
   function renderResults(data) {
@@ -163,7 +323,7 @@
 
         <div class="pm-actions">
           <button class="pm-btn pm-btn-primary" id="pm-use-refined">
-            ↑ Use Refined Prompt
+            ↑ Overwrite Written Prompt
           </button>
           <button class="pm-btn pm-btn-secondary" id="pm-dismiss">
             Dismiss
@@ -177,10 +337,12 @@
     p.querySelector('#pm-use-refined').addEventListener('click', () => {
       if (currentEditor && data.finalPrompt) {
         adapter.setText(currentEditor, data.finalPrompt);
+        showToast('Prompt completely overwritten!');
       }
       closePanel();
     });
 
+    positionPanelNextToFAB();
     requestAnimationFrame(() => p.classList.add('pm-panel-visible'));
   }
 
@@ -201,6 +363,7 @@
       </div>
     `;
     p.querySelector('#pm-close').addEventListener('click', closePanel);
+    positionPanelNextToFAB();
     p.classList.add('pm-panel-visible');
   }
 
@@ -208,6 +371,48 @@
     if (panel) {
       panel.classList.remove('pm-panel-visible');
       setTimeout(() => { if (panel) panel.remove(); panel = null; }, 250);
+    }
+  }
+
+  function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'pm-toast';
+    toast.innerHTML = `<span>✨ ${msg}</span>`;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('pm-toast-visible'));
+    setTimeout(() => {
+      toast.classList.remove('pm-toast-visible');
+      setTimeout(() => toast.remove(), 300);
+    }, 2500);
+  }
+
+  async function handleQuickOverwrite() {
+    const editor = adapter.getEditor();
+    if (!editor) return;
+    currentEditor = editor;
+    const promptText = adapter.getText(editor).trim();
+
+    if (!promptText || promptText.length < 3) {
+      showToast('Please type a prompt first!');
+      return;
+    }
+
+    showToast('Optimizing & overwriting prompt...');
+
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'analyzePrompt',
+        prompt: promptText
+      });
+
+      if (response && response.success && response.data?.finalPrompt) {
+        adapter.setText(editor, response.data.finalPrompt);
+        showToast('Prompt overwritten with AI optimized version!');
+      } else {
+        showToast('Failed to optimize prompt. Check API key.');
+      }
+    } catch (err) {
+      showToast('Optimization error');
     }
   }
 
@@ -251,23 +456,35 @@
       currentEditor = editor;
       createFAB();
       positionFAB(editor);
+      checkInputAndGlow();
     }
   }
 
   const observer = new MutationObserver(() => {
     tryAttach();
+    checkInputAndGlow();
   });
-  observer.observe(document.body, { childList: true, subtree: true });
+  observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+  document.addEventListener('input', () => {
+    checkInputAndGlow();
+  });
+  document.addEventListener('keyup', () => {
+    checkInputAndGlow();
+  });
 
   window.addEventListener('resize', () => {
-    if (currentEditor) positionFAB(currentEditor);
+    if (currentEditor && !userHasCustomPos) positionFAB(currentEditor);
+    if (panel && panel.classList.contains('pm-panel-visible')) positionPanelNextToFAB();
   });
 
   window.addEventListener('scroll', () => {
-    if (currentEditor) positionFAB(currentEditor);
+    if (currentEditor && !userHasCustomPos) positionFAB(currentEditor);
+    if (panel && panel.classList.contains('pm-panel-visible')) positionPanelNextToFAB();
   }, true);
 
-  setTimeout(tryAttach, 1500);
-  setTimeout(tryAttach, 3000);
-  setTimeout(tryAttach, 5000);
+  setTimeout(tryAttach, 1000);
+  setTimeout(tryAttach, 2500);
+  setTimeout(tryAttach, 4000);
 })();
+
