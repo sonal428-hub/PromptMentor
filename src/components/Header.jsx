@@ -73,7 +73,7 @@ export default function Header({ apiKey, onOpenApiKeyModal, onOpenFlashcards }) 
         <ButtonColorful
           onClick={onOpenFlashcards}
           title="Interactive Prompting Flashcards"
-          className="h-9 px-3.5 border-violet-500/30 hover:border-violet-500/60"
+          className="border-violet-500/30 hover:border-violet-500/60"
         >
           <BookOpen className="w-4 h-4 text-violet-400" />
           <span className="hidden sm:inline text-gray-200 font-medium">Flashcards</span>
