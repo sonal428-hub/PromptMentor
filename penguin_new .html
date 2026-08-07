@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Penguin Mascot — Idle Animation</title>
+<style>
+  :root{
+    --ink:#1c2530;        /* near-black tuxedo */
+    --ink-soft:#2b3644;
+    --snow:#ffffff;
+    --snow-shade:#e9eef3;
+    --beak:#ff9e2c;
+    --beak-shade:#e07d0e;
+    --blush:#ff9d9d;
+    --stage:#16324f;      /* preview stage only, penguin itself has no bg */
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(circle at 50% 20%, #1e3f63 0%, var(--stage) 60%, #0d1d2e 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow:hidden;
+  }
+
+  /* purely decorative preview chrome — delete this block and keep
+     #penguin-stage svg if you just want the transparent character */
+  .stage-label{
+    position:fixed;
+    bottom:22px;
+    left:50%;
+    transform:translateX(-50%);
+    color:rgba(255,255,255,.55);
+    font-size:12px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .penguin-wrap{
+    width:150px;
+    height:170px;
+  }
+
+  svg{ width:100%; height:100%; overflow:visible; display:block; }
+
+  /* ---------- shadow (grounded, breathes opposite the bounce) ---------- */
+  #shadow{
+    transform-origin:50% 50%;
+    animation: shadow-pulse 1.6s ease-in-out infinite;
+  }
+
+  /* ---------- whole-body idle bounce, matrix-driven squash & stretch ---------- */
+  #penguin{
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: bounce 2.2s cubic-bezier(.45,0,.55,1) infinite;
+  }
+
+  /* subtle idle bob — small squash/stretch, small lift */
+  @keyframes bounce{
+    0%   { transform: matrix(1,0,0,1,0,0); }
+    25%  { transform: matrix(1.012,0,0,0.985,0,1.5); } /* tiny anticipation */
+    50%  { transform: matrix(0.99,0,0,1.02,0,-4); }     /* tiny lift */
+    75%  { transform: matrix(1.006,0,0,0.995,0,1); }
+    100% { transform: matrix(1,0,0,1,0,0); }
+  }
+
+  @keyframes shadow-pulse{
+    0%   { transform: matrix(1,0,0,1,0,0); opacity:.32; }
+    50%  { transform: matrix(0.94,0,0,0.94,0,0); opacity:.24; }
+    100% { transform: matrix(1,0,0,1,0,0); opacity:.32; }
+  }
+
+  /* ---------- wings, gentle offset flap for liveliness ---------- */
+  #wing-left{
+    transform-origin: 78px 184px;
+    animation: flap-left 2.2s ease-in-out infinite;
+  }
+  #wing-right{
+    transform-origin: 162px 184px;
+    animation: flap-right 2.2s ease-in-out infinite;
+  }
+  @keyframes flap-left{
+    0%,100%{ transform: matrix(1,0,0,1,0,0); }
+    50%{ transform: matrix(1,-0.05,0.05,1,0,0); }
+  }
+  @keyframes flap-right{
+    0%,100%{ transform: matrix(1,0,0,1,0,0); }
+    50%{ transform: matrix(1,0.05,-0.05,1,0,0); }
+  }
+
+  /* ---------- eyes: duolingo-style squish blink ---------- */
+  #eye-left, #eye-right{
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: blink 4.4s ease-in-out infinite;
+  }
+  #eye-right{ animation-delay: .03s; }
+
+  @keyframes blink{
+    0%, 89%, 100% { transform: matrix(1,0,0,1,0,0); }
+    92%           { transform: matrix(1,0,0,0.08,0,0); }
+    95%           { transform: matrix(1,0,0,1,0,0); }
+    /* quick double-blink, owl-style character beat */
+    96.5%         { transform: matrix(1,0,0,0.08,0,0); }
+    98.5%         { transform: matrix(1,0,0,1,0,0); }
+  }
+
+  /* ---------- happy mode: bigger jump + joyful arm waving from the same joints ---------- */
+  #penguin-stage.mode-happy #penguin{
+    animation: bounce-happy 1.1s cubic-bezier(.34,1.56,.64,1) infinite;
+  }
+  #penguin-stage.mode-happy #shadow{
+    animation: shadow-pulse-happy 1.1s ease-in-out infinite;
+  }
+  #penguin-stage.mode-happy #wing-left{
+    animation: flap-left-happy .9s ease-in-out infinite;
+  }
+  #penguin-stage.mode-happy #wing-right{
+    animation: flap-right-happy .9s ease-in-out infinite;
+  }
+
+  @keyframes bounce-happy{
+    0%   { transform: matrix(1,0,0,1,0,0); }
+    25%  { transform: matrix(1.05,0,0,0.92,0,4); }   /* crouch */
+    55%  { transform: matrix(0.94,0,0,1.08,0,-16); } /* higher jump */
+    80%  { transform: matrix(1.03,0,0,0.96,0,2); }
+    100% { transform: matrix(1,0,0,1,0,0); }
+  }
+
+  @keyframes shadow-pulse-happy{
+    0%   { transform: matrix(1,0,0,1,0,0); opacity:.32; }
+    55%  { transform: matrix(0.82,0,0,0.82,0,0); opacity:.18; }
+    100% { transform: matrix(1,0,0,1,0,0); opacity:.32; }
+  }
+
+  /* rotate from the existing joint origins (78px 184px / 162px 184px) for a joyful wave */
+  @keyframes flap-left-happy{
+    0%, 100% { transform: rotate(0deg); }
+    25%      { transform: rotate(-30deg); }
+    50%      { transform: rotate(12deg); }
+    75%      { transform: rotate(-22deg); }
+  }
+  @keyframes flap-right-happy{
+    0%, 100% { transform: rotate(0deg); }
+    25%      { transform: rotate(30deg); }
+    50%      { transform: rotate(-12deg); }
+    75%      { transform: rotate(22deg); }
+  }
+
+  /* ---------- wave mode: right wing raises to a thumbs-up pose and wiggles hello ---------- */
+  #penguin-stage.mode-wave #wing-right{
+    animation: wave-right 2.4s ease-in-out infinite;
+  }
+
+  /* same joint origin (162px 184px), just rotated upright instead of flapped */
+  @keyframes wave-right{
+    0%   { transform: rotate(0deg); }
+    18%  { transform: rotate(-95deg); }  /* raise into thumbs-up */
+    30%  { transform: rotate(-85deg); }  /* wiggle */
+    42%  { transform: rotate(-95deg); }
+    54%  { transform: rotate(-85deg); }
+    66%  { transform: rotate(-95deg); }
+    82%  { transform: rotate(-90deg); }  /* hold */
+    100% { transform: rotate(0deg); }    /* lower back down */
+  }
+
+  /* ---------- sad mode: head droops, blink slows way down, arms sway slower ---------- */
+  #head{
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+  #penguin-stage.mode-sad #head{
+    animation: droop 3.2s ease-in-out infinite;
+  }
+  @keyframes droop{
+    0%, 100% { transform: translate(0,0) rotate(0deg); }
+    50%      { transform: translate(0,6px) rotate(8deg); }
+  }
+  #penguin-stage.mode-sad #eye-left,
+  #penguin-stage.mode-sad #eye-right{
+    animation-duration: 8s; /* same blink keyframes, just heavier/slower lids */
+  }
+  #penguin-stage.mode-sad #wing-left{
+    animation: flap-left-happy 3.4s ease-in-out infinite; /* same sway, slowed down */
+  }
+  #penguin-stage.mode-sad #wing-right{
+    animation: flap-right-happy 3.4s ease-in-out infinite;
+  }
+
+
+  @media (prefers-reduced-motion: reduce){
+    #penguin, #shadow, #wing-left, #wing-right, #eye-left, #eye-right, #head{
+      animation: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="penguin-wrap" id="penguin-stage">
+    <svg viewBox="0 0 240 320" xmlns="http://www.w3.org/2000/svg">
+
+      <ellipse id="shadow" cx="120" cy="272" rx="54" ry="10" fill="#000000"/>
+
+      <g id="penguin">
+
+        <!-- feet -->
+        <ellipse cx="97"  cy="258" rx="18" ry="10" fill="var(--beak-shade)"/>
+        <ellipse cx="143" cy="258" rx="18" ry="10" fill="var(--beak-shade)"/>
+        <ellipse cx="97"  cy="255" rx="18" ry="10" fill="var(--beak)"/>
+        <ellipse cx="143" cy="255" rx="18" ry="10" fill="var(--beak)"/>
+
+        <!-- wings: thin flippers stretched out to the sides, like the reference art -->
+        <g id="wing-left">
+          <path d="M78,178
+                   C60,175 40,182 32,196
+                   C28,203 30,211 37,211
+                   C48,211 62,200 75,189
+                   C79,186 80,181 78,178 Z"
+                fill="var(--ink)"/>
+        </g>
+        <g id="wing-right">
+          <path d="M162,178
+                   C180,175 200,182 208,196
+                   C212,203 210,211 203,211
+                   C192,211 178,200 165,189
+                   C161,186 160,181 162,178 Z"
+                fill="var(--ink)"/>
+        </g>
+
+        <!-- lower body -->
+        <ellipse cx="120" cy="196" rx="74" ry="66" fill="var(--ink)"/>
+
+        <!-- belly -->
+        <ellipse cx="120" cy="208" rx="50" ry="50" fill="var(--snow)"/>
+        <ellipse cx="120" cy="220" rx="50" ry="32" fill="var(--snow-shade)" opacity=".55"/>
+
+        <!-- head group: everything that droops together in sad mode -->
+        <g id="head">
+          <!-- upper body / head shape -->
+          <ellipse cx="120" cy="104" rx="66" ry="52" fill="var(--ink)"/>
+
+          <!-- face patch -->
+          <ellipse cx="120" cy="108" rx="46" ry="36" fill="var(--snow)"/>
+
+          <!-- blush -->
+          <ellipse cx="76"  cy="122" rx="10" ry="6" fill="var(--blush)" opacity=".55"/>
+          <ellipse cx="164" cy="122" rx="10" ry="6" fill="var(--blush)" opacity=".55"/>
+
+          <!-- beak -->
+          <path d="M120 116 L140 131 L120 144 L100 131 Z" fill="var(--beak)"/>
+          <path d="M120 131 L140 131 L120 144 L100 131 Z" fill="var(--beak-shade)"/>
+
+          <!-- eyes: oval, anime-cute, kept just inside the face patch -->
+          <g id="eye-left">
+            <ellipse cx="95" cy="100" rx="14" ry="19" fill="var(--snow)"/>
+            <circle  cx="95" cy="102" r="8" fill="#12161c"/>
+            <circle  cx="92" cy="96"  r="3.2" fill="var(--snow)"/>
+            <circle  cx="98" cy="106" r="1.6" fill="var(--snow)" opacity=".85"/>
+          </g>
+          <g id="eye-right">
+            <ellipse cx="145" cy="100" rx="14" ry="19" fill="var(--snow)"/>
+            <circle  cx="145" cy="102" r="8" fill="#12161c"/>
+            <circle  cx="142" cy="96"  r="3.2" fill="var(--snow)"/>
+            <circle  cx="148" cy="106" r="1.6" fill="var(--snow)" opacity=".85"/>
+          </g>
+        </g>
+    </svg>
+  </div>
+
+  <div class="stage-label" id="stage-label">idle loop — subtle bounce (matrix) + blink</div>
+
+  <script>
+    const stage = document.getElementById('penguin-stage');
+    const label = document.getElementById('stage-label');
+    const buttons = document.querySelectorAll('.controls button');
+    const modeClasses = ['mode-happy', 'mode-wave', 'mode-sad'];
+    const labels = {
+      idle:  'idle loop — subtle bounce (matrix) + blink',
+      happy: 'happy loop — big jump + joint wave',
+      wave:  'wave loop — right wing thumbs-up wave',
+      sad:   'sad loop — head droop + slow blink + slow sway'
+    };
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        stage.classList.remove(...modeClasses);
+        if (mode !== 'idle') stage.classList.add('mode-' + mode);
+        buttons.forEach(b => b.classList.toggle('active', b === btn));
+        label.textContent = labels[mode];
+      });
+    });
+  </script>
+
+</body>
+</html>
