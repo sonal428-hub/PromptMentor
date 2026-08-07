@@ -13,8 +13,8 @@ export default function HomePage() {
     {
       title: "Prompt Improve",
       href: "/improve",
-      imgSrc: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=320&q=75",
-      imgAlt: "AI Prompt Workbench Illustration",
+      imgSrc: "/images/card_improve.png",
+      imgAlt: "3D glass lightbulb with blue liquid splash",
       variant: "purple",
       badge: "Main Feature",
       description: "Collaborative AI prompt coach with draggable split panels, live AI quality score (0–100), specificity meter, and dual LLM output comparison."
@@ -22,8 +22,8 @@ export default function HomePage() {
     {
       title: "Learn Prompting",
       href: "/learn",
-      imgSrc: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=320&q=75",
-      imgAlt: "Interactive learning illustration",
+      imgSrc: "/images/card_learn.png",
+      imgAlt: "3D floating book and graduation cap",
       variant: "blue",
       badge: "Interactive Modules",
       description: "Master prompt engineering fundamentals through step-by-step interactive flashcards, progressive disclosure cards, and real-world prompt examples."
@@ -31,8 +31,8 @@ export default function HomePage() {
     {
       title: "Leaderboard",
       href: "/leaderboard",
-      imgSrc: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=320&q=75",
-      imgAlt: "Community showcase illustration",
+      imgSrc: "/images/card_leaderboard.png",
+      imgAlt: "3D metallic gold trophy cup",
       variant: "gray",
       badge: "Community",
       description: "Explore high-scoring prompts crafted by the community, categorized by domain, quality score, and precision benchmarks."
@@ -40,8 +40,8 @@ export default function HomePage() {
     {
       title: "Track Progress",
       href: "/progress",
-      imgSrc: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=320&q=75",
-      imgAlt: "Analytics dashboard illustration",
+      imgSrc: "/images/card_progress.png",
+      imgAlt: "3D futuristic glass bar chart",
       variant: "emerald",
       badge: "Analytics",
       description: "Review your personal prompt improvement radar, historical score deltas, specificity metrics, and shareable prompt glow-up cards."
