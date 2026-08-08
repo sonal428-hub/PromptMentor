@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Target, GraduationCap, LineChart, Home } from 'lucide-react';
+import { BookOpen, Target, GraduationCap, LineChart, Home, Puzzle } from 'lucide-react';
 import { ButtonColorful } from '@/components/ui/button-colorful';
 
-export default function Header({ onOpenFlashcards }) {
+export default function Header({ onOpenFlashcards, onOpenExtension }) {
   const location = useLocation();
 
   const navItems = [
@@ -11,8 +11,6 @@ export default function Header({ onOpenFlashcards }) {
     { label: 'Learn Prompting', path: '/learn', icon: GraduationCap },
     { label: 'Track Progress', path: '/progress', icon: LineChart },
   ];
-
-
 
   return (
     <header className="w-full border-b border-white/10 bg-slate-950/85 backdrop-blur-xl sticky top-0 z-50 px-4 lg:px-8 py-3 flex items-center justify-between gap-4 shadow-xl shadow-slate-950/50">
@@ -65,6 +63,16 @@ export default function Header({ onOpenFlashcards }) {
             </Link>
           );
         })}
+
+        {/* Chrome Extension Button beside Track Progress */}
+        <ButtonColorful
+          onClick={onOpenExtension}
+          title="PromptMentor Chrome Extension Guide"
+          className="h-9 px-3.5 border-violet-500/30 hover:border-violet-500/60"
+        >
+          <Puzzle className="w-4 h-4 text-violet-400" />
+          <span className="text-gray-200 font-medium">Chrome Extension</span>
+        </ButtonColorful>
       </nav>
 
       <div className="flex items-center gap-2.5">

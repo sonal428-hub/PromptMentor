@@ -11,6 +11,7 @@ import ApiKeyModal from './components/ApiKeyModal';
 import ScrollToTop from './components/ScrollToTop';
 import GlobalPenguinMascot from './components/GlobalPenguinMascot';
 import FaqModal from './components/FaqModal';
+import ExtensionModal from './components/ExtensionModal';
 import { coaxAnalyze, comparePromptOutputs } from './utils/geminiApi';
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
   const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const [isExtensionOpen, setIsExtensionOpen] = useState(false);
 
   const [coaxResult, setCoaxResult] = useState(null);
   const [isCoaxing, setIsCoaxing] = useState(false);
@@ -89,6 +91,7 @@ export default function App() {
       />
       <Header
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
+        onOpenExtension={() => setIsExtensionOpen(true)}
       />
 
       <main className="flex-1 w-full overflow-hidden">
@@ -162,6 +165,11 @@ export default function App() {
       <FaqModal
         isOpen={isFaqOpen}
         onClose={() => setIsFaqOpen(false)}
+      />
+
+      <ExtensionModal
+        isOpen={isExtensionOpen}
+        onClose={() => setIsExtensionOpen(false)}
       />
     </div>
   );
