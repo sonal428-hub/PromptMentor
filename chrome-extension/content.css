@@ -91,17 +91,18 @@
 .pm-fab-hover-card::after {
   content: '';
   position: absolute;
-  bottom: -20px;
-  left: 0;
-  width: 100%;
-  height: 25px;
+  bottom: -25px;
+  right: 0;
+  width: 120px;
+  height: 30px;
   background: transparent;
+  pointer-events: auto;
 }
 
 #pm-fab.pm-hover-open .pm-fab-hover-card,
 .pm-fab-hover-card:hover {
   opacity: 1;
-  pointer-events: all;
+  pointer-events: auto !important;
   transform: translateY(0) scale(1);
 }
 
@@ -124,7 +125,7 @@
 
 .pm-quick-btn {
   width: 100%;
-  padding: 8px 10px;
+  padding: 9px 10px;
   background: linear-gradient(135deg, #7c3aed, #6366f1);
   color: white;
   border: none;
@@ -138,11 +139,17 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 2147483647;
 }
 .pm-quick-btn:hover {
   background: linear-gradient(135deg, #8b5cf6, #818cf8);
   box-shadow: 0 6px 16px rgba(124, 58, 237, 0.6);
   transform: translateY(-1px);
+}
+.pm-quick-btn:active {
+  transform: translateY(1px);
 }
 
 .pm-hover-sub {

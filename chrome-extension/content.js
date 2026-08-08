@@ -141,9 +141,8 @@
       </div>
     `;
 
-    setupDragging(fab);
-
     const hoverCard = fab.querySelector('.pm-fab-hover-card');
+    const quickBtn = fab.querySelector('#pm-quick-overwrite-btn');
 
     function closeHoverCard() {
       if (hoverTimer) clearTimeout(hoverTimer);
@@ -154,35 +153,46 @@
     function openHoverCard() {
       if (hoverTimer) clearTimeout(hoverTimer);
       fab.classList.add('pm-hover-open');
-
-      hoverTimer = setTimeout(() => {
-        if (!hoverCard.matches(':hover')) {
-          closeHoverCard();
-        }
-      }, 1000);
     }
 
     fab.addEventListener('mouseenter', openHoverCard);
 
     fab.addEventListener('mouseleave', () => {
-      setTimeout(() => {
+      if (hoverTimer) clearTimeout(hoverTimer);
+      hoverTimer = setTimeout(() => {
         if (!fab.matches(':hover') && !hoverCard.matches(':hover')) {
           closeHoverCard();
         }
-      }, 150);
+      }, 250);
     });
 
     if (hoverCard) {
-      hoverCard.addEventListener('mouseleave', closeHoverCard);
+      hoverCard.addEventListener('mouseenter', openHoverCard);
+      hoverCard.addEventListener('mouseleave', () => {
+        if (hoverTimer) clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => {
+          if (!fab.matches(':hover') && !hoverCard.matches(':hover')) {
+            closeHoverCard();
+          }
+        }, 250);
+      });
+    }
+
+    if (quickBtn) {
+      quickBtn.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+      });
+      quickBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeHoverCard();
+        handleQuickOverwrite();
+      });
     }
 
     fab.addEventListener('click', (e) => {
       if (dragHasMoved) return;
-      if (e.target.closest('#pm-quick-overwrite-btn')) {
-        closeHoverCard();
-        handleQuickOverwrite();
-        return;
-      }
+      if (e.target.closest('#pm-quick-overwrite-btn')) return;
       closeHoverCard();
       handleAnalyze();
     });
