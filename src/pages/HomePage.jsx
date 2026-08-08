@@ -97,15 +97,6 @@ export default function HomePage() {
             <Sparkle className="absolute top-20 -left-8 text-indigo-300/60" size={28} delay={0.5} />
             <Sparkle className="absolute bottom-16 left-[70%] text-violet-300/50" size={18} delay={1.2} />
 
-            {/* Badge */}
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-block text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-violet-400 mb-1"
-            >
-              Main Feature
-            </motion.span>
 
             {/* Hero Heading */}
             <motion.h1
