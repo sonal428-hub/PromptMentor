@@ -3,6 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Puzzle, Download, Sparkles, CheckCircle2, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
 export default function ExtensionModal({ isOpen, onClose }) {
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = '/promptmentor-chrome-extension.zip';
+    link.download = 'promptmentor-chrome-extension.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -55,6 +64,27 @@ export default function ExtensionModal({ isOpen, onClose }) {
             {/* Scrollable Body */}
             <div className="flex-1 overflow-y-auto pr-1 space-y-5 custom-scrollbar">
 
+              {/* Installer Banner with 1-Click Download Button */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-violet-900/50 via-slate-900 to-indigo-900/50 border border-violet-500/40 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="space-y-1 text-center sm:text-left">
+                  <h3 className="text-base font-extrabold text-white font-heading flex items-center gap-2 justify-center sm:justify-start">
+                    <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
+                    Download Installer Package
+                  </h3>
+                  <p className="text-xs text-slate-300">
+                    Get the complete <code className="text-violet-300 font-mono">promptmentor-chrome-extension.zip</code> ready to load into Chrome!
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleDownload}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-emerald-500 hover:from-violet-500 hover:to-emerald-400 text-white text-xs font-bold transition-all shadow-xl shadow-violet-500/30 active:scale-95 flex items-center justify-center gap-2 shrink-0 border border-white/20"
+                >
+                  <Download className="w-4 h-4 animate-bounce" />
+                  <span>Download Extension (.zip)</span>
+                </button>
+              </div>
+
               {/* Feature Highlights Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-white/5 space-y-1.5">
@@ -91,7 +121,7 @@ export default function ExtensionModal({ isOpen, onClose }) {
                       1
                     </span>
                     <div>
-                      <strong className="text-white">Locate Extension Folder:</strong> The extension is located inside the <code className="px-1.5 py-0.5 rounded bg-slate-800 text-violet-300 font-mono">chrome-extension/</code> folder of this repository.
+                      <strong className="text-white">Download & Extract Zip:</strong> Click the button above to download <code className="px-1.5 py-0.5 rounded bg-slate-800 text-violet-300 font-mono">promptmentor-chrome-extension.zip</code> and extract its contents.
                     </div>
                   </li>
 
@@ -118,7 +148,7 @@ export default function ExtensionModal({ isOpen, onClose }) {
                       4
                     </span>
                     <div>
-                      <strong className="text-white">Load Unpacked:</strong> Click <strong className="text-violet-300">"Load unpacked"</strong> and select the <code className="px-1.5 py-0.5 rounded bg-slate-800 text-violet-300 font-mono">chrome-extension</code> folder.
+                      <strong className="text-white">Load Unpacked:</strong> Click <strong className="text-violet-300">"Load unpacked"</strong> and select the unzipped extension folder.
                     </div>
                   </li>
 
@@ -151,12 +181,21 @@ export default function ExtensionModal({ isOpen, onClose }) {
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 <span>100% Private — Client-side & Gemini API powered</span>
               </div>
-              <button
-                onClick={onClose}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-lg shadow-violet-500/25 active:scale-95"
-              >
-                Got It!
-              </button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={handleDownload}
+                  className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download .zip</span>
+                </button>
+                <button
+                  onClick={onClose}
+                  className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all active:scale-95"
+                >
+                  Close
+                </button>
+              </div>
             </div>
 
           </motion.div>
