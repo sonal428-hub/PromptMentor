@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Award, Zap, Layers, HelpCircle } from 'lucide-react';
+import { Award, Zap, Layers } from 'lucide-react';
 import { ServiceCard } from '@/components/ui/service-card';
 
-export default function HomePage({ onOpenFaq }) {
+export default function HomePage() {
   const navigate = useNavigate();
 
   const services = [
@@ -140,7 +140,7 @@ export default function HomePage({ onOpenFaq }) {
             </motion.div>
           </motion.div>
 
-          {/* Right: Penguin Mascot (5 cols) - Interactive & Animated with FAQs Trigger */}
+          {/* Right: Bigger Penguin Mascot (5 cols) - Pure Aesthetics */}
           <motion.div
             initial={{ opacity: 0, x: 30, scale: 0.95 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -152,36 +152,23 @@ export default function HomePage({ onOpenFaq }) {
             <Sparkle className="absolute top-[20%] -right-2 text-cyan-300/70" size={16} delay={0.8} />
             <Sparkle className="absolute bottom-[20%] right-[80%] text-violet-300/60" size={20} delay={1.5} />
 
-            {/* Floating Container Wrapper */}
+            {/* Floating Container Wrapper - Aesthetics only */}
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="relative group cursor-pointer pt-6"
-              onClick={onOpenFaq}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              className="relative"
             >
-              {/* Perfectly Arranged Floating FAQ Label Badge */}
-              <div className="absolute top-0 right-4 sm:right-8 z-20 px-3.5 py-1.5 rounded-full bg-slate-900/90 text-white text-xs font-bold shadow-xl border border-violet-500/40 flex items-center gap-2 backdrop-blur-md group-hover:border-violet-400 group-hover:bg-violet-600 transition-all duration-300">
-                <HelpCircle className="w-3.5 h-3.5 text-violet-300 group-hover:text-white animate-bounce" />
-                <span>FAQs & Help 🐧</span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-
-              {/* Penguin Circle Frame with Pulsing Glow on Hover */}
+              {/* Penguin Circle Frame */}
               <div className="relative w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] lg:w-[440px] lg:h-[440px] xl:w-[480px] xl:h-[480px] rounded-full">
                 
-                {/* Pulsing Outer Glow Ring */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-700/50 via-slate-800/70 to-slate-900/90 border border-white/15 shadow-2xl shadow-violet-950/40 group-hover:border-violet-400/50 group-hover:shadow-violet-500/30 transition-all duration-500" />
-                
-                {/* Hover Radial Ring Effect */}
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-500" />
+                {/* Glow Ring */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-700/50 via-slate-800/70 to-slate-900/90 border border-white/15 shadow-2xl shadow-violet-950/40" />
 
                 {/* Penguin Image */}
                 <img
                   src="/images/penguin_mascot.png"
                   alt="PromptMentor Penguin Mascot"
-                  className="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] object-contain rounded-full drop-shadow-2xl transition-transform duration-300 group-hover:scale-105"
+                  className="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] object-contain rounded-full drop-shadow-2xl"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.parentElement.querySelector('.fallback-emoji').style.display = 'flex';
