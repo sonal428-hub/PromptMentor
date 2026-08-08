@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Award, Zap, Layers, HelpCircle, MessageSquare } from 'lucide-react';
+import { Award, Zap, Layers, HelpCircle } from 'lucide-react';
 import { ServiceCard } from '@/components/ui/service-card';
-import FaqModal from '@/components/FaqModal';
 
-export default function HomePage() {
+export default function HomePage({ onOpenFaq }) {
   const navigate = useNavigate();
-  const [isFaqOpen, setIsFaqOpen] = useState(false);
 
   const services = [
     {
@@ -158,28 +156,23 @@ export default function HomePage() {
             <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="relative group cursor-pointer"
-              onClick={() => setIsFaqOpen(true)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
+              className="relative group cursor-pointer pt-6"
+              onClick={onOpenFaq}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
             >
-              {/* Floating Speech Bubble Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.5 }}
-                className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 px-4 py-2 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold shadow-xl border border-white/20 flex items-center gap-2 whitespace-nowrap group-hover:from-violet-500 group-hover:to-indigo-500 transition-all"
-              >
-                <HelpCircle className="w-4 h-4 text-violet-200 animate-bounce" />
-                <span>Click me for FAQs! 🐧</span>
+              {/* Perfectly Arranged Floating FAQ Label Badge */}
+              <div className="absolute top-0 right-4 sm:right-8 z-20 px-3.5 py-1.5 rounded-full bg-slate-900/90 text-white text-xs font-bold shadow-xl border border-violet-500/40 flex items-center gap-2 backdrop-blur-md group-hover:border-violet-400 group-hover:bg-violet-600 transition-all duration-300">
+                <HelpCircle className="w-3.5 h-3.5 text-violet-300 group-hover:text-white animate-bounce" />
+                <span>FAQs & Help 🐧</span>
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              </motion.div>
+              </div>
 
               {/* Penguin Circle Frame with Pulsing Glow on Hover */}
               <div className="relative w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] lg:w-[440px] lg:h-[440px] xl:w-[480px] xl:h-[480px] rounded-full">
                 
                 {/* Pulsing Outer Glow Ring */}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-600/30 via-slate-800/70 to-indigo-600/30 border border-white/20 shadow-2xl shadow-violet-950/60 group-hover:border-violet-400/50 group-hover:shadow-violet-500/30 transition-all duration-500" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-700/50 via-slate-800/70 to-slate-900/90 border border-white/15 shadow-2xl shadow-violet-950/40 group-hover:border-violet-400/50 group-hover:shadow-violet-500/30 transition-all duration-500" />
                 
                 {/* Hover Radial Ring Effect */}
                 <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-500" />
@@ -264,12 +257,6 @@ export default function HomePage() {
         </motion.div>
 
       </div>
-
-      {/* Interactive Penguin FAQ Modal */}
-      <FaqModal
-        isOpen={isFaqOpen}
-        onClose={() => setIsFaqOpen(false)}
-      />
     </div>
   );
 }

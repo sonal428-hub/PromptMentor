@@ -10,6 +10,7 @@ import EducationalFlashcards from './components/EducationalFlashcards';
 import ApiKeyModal from './components/ApiKeyModal';
 import ScrollToTop from './components/ScrollToTop';
 import GlobalPenguinMascot from './components/GlobalPenguinMascot';
+import FaqModal from './components/FaqModal';
 import { coaxAnalyze, comparePromptOutputs } from './utils/geminiApi';
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
   const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
 
   const [coaxResult, setCoaxResult] = useState(null);
   const [isCoaxing, setIsCoaxing] = useState(false);
@@ -80,14 +82,18 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-gray-100 selection:bg-violet-500 selection:text-white font-sans">
       <ScrollToTop />
-      <GlobalPenguinMascot coaxResult={coaxResult} isCoaxing={isCoaxing} />
+      <GlobalPenguinMascot
+        coaxResult={coaxResult}
+        isCoaxing={isCoaxing}
+        onOpenFaq={() => setIsFaqOpen(true)}
+      />
       <Header
         onOpenFlashcards={() => setIsFlashcardsOpen(true)}
       />
 
       <main className="flex-1 w-full overflow-hidden">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<HomePage onOpenFaq={() => setIsFaqOpen(true)} />} />
           <Route
             path="/improve"
             element={
@@ -151,6 +157,11 @@ export default function App() {
         onClose={() => setIsApiKeyModalOpen(false)}
         apiKey={apiKey}
         onSaveApiKey={handleSaveApiKey}
+      />
+
+      <FaqModal
+        isOpen={isFaqOpen}
+        onClose={() => setIsFaqOpen(false)}
       />
     </div>
   );
