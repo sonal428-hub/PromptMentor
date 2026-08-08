@@ -147,7 +147,7 @@ export function analyzePrompt(userPrompt) {
   const words = text ? text.split(/\s+/).filter(Boolean) : [];
 
   if (words.length < 2 || text.length < 4) {
-    const calcScore = Math.min(10, Math.max(2, text.length * 3));
+    const calcScore = text.length === 0 ? 0 : Math.min(10, Math.max(1, text.length * 3));
     return {
       userPrompt: text,
       wordCount: words.length,
