@@ -73,36 +73,36 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e1a] via-[#131838] to-[#0a0e1a]" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0a0e1a] via-[#1a1040]/40 to-[#0a0e1a]" />
         {/* Subtle radial glow behind hero */}
-        <div className="absolute top-[10%] left-[30%] w-[600px] h-[600px] rounded-full bg-violet-600/8 blur-[120px]" />
-        <div className="absolute top-[20%] right-[15%] w-[400px] h-[400px] rounded-full bg-indigo-500/6 blur-[100px]" />
+        <div className="absolute top-[10%] left-[25%] w-[700px] h-[700px] rounded-full bg-violet-600/10 blur-[130px]" />
+        <div className="absolute top-[15%] right-[10%] w-[500px] h-[500px] rounded-full bg-indigo-500/8 blur-[110px]" />
         {/* Orbital ring decoration (right side) */}
-        <div className="absolute top-[15%] right-[5%] w-[420px] h-[420px] rounded-full border border-white/[0.04] hidden lg:block" />
-        <div className="absolute top-[18%] right-[8%] w-[360px] h-[360px] rounded-full border border-white/[0.03] hidden lg:block" />
+        <div className="absolute top-[10%] right-[3%] w-[520px] h-[520px] rounded-full border border-white/[0.04] hidden lg:block" />
+        <div className="absolute top-[14%] right-[6%] w-[450px] h-[450px] rounded-full border border-white/[0.03] hidden lg:block" />
       </div>
 
-      <div className="relative z-10 text-gray-100 p-6 lg:p-12 space-y-14 max-w-7xl mx-auto">
+      <div className="relative z-10 text-gray-100 p-4 sm:p-6 lg:p-10 space-y-12 max-w-7xl mx-auto">
 
         {/* Hero Section: Text Left + Penguin Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-center pt-8 lg:pt-14 pb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-2 items-center pt-4 lg:pt-8 pb-2">
 
-          {/* Left: Text content (3 cols) */}
+          {/* Left: Text content (7 cols) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-            className="lg:col-span-3 space-y-6 relative"
+            className="lg:col-span-7 space-y-5 relative pr-0 lg:pr-2"
           >
             {/* Sparkle decorations */}
-            <Sparkle className="absolute -top-4 -left-2 text-violet-400/70" size={16} delay={0} />
-            <Sparkle className="absolute top-16 -left-10 text-indigo-300/50" size={24} delay={0.5} />
-            <Sparkle className="absolute bottom-20 left-[60%] text-violet-300/40" size={14} delay={1.2} />
+            <Sparkle className="absolute -top-6 -left-2 text-violet-400/80" size={20} delay={0} />
+            <Sparkle className="absolute top-20 -left-8 text-indigo-300/60" size={28} delay={0.5} />
+            <Sparkle className="absolute bottom-16 left-[70%] text-violet-300/50" size={18} delay={1.2} />
 
             {/* Badge */}
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-violet-400 mb-2"
+              className="inline-block text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-violet-400 mb-1"
             >
               Main Feature
             </motion.span>
@@ -112,7 +112,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.7 }}
-              className="text-4xl sm:text-5xl lg:text-[3.8rem] font-black tracking-tight font-heading leading-[1.08] text-white"
+              className="text-4xl sm:text-6xl lg:text-[4.6rem] xl:text-[5.2rem] font-black tracking-tight font-heading leading-[1.05] text-white"
             >
               Write Better{' '}
               <br className="hidden sm:block" />
@@ -126,14 +126,14 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-slate-400 text-base sm:text-lg font-normal leading-relaxed max-w-lg font-sans"
+              className="text-slate-300 text-lg sm:text-xl font-medium leading-relaxed max-w-xl font-sans"
             >
               PromptMentor teaches you to ask AI better questions,
               <br className="hidden sm:block" />
               one prompt at a time.
             </motion.p>
 
-            {/* Get Started Button - matching screenshot style */}
+            {/* Get Started Button */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -142,37 +142,36 @@ export default function HomePage() {
             >
               <button
                 onClick={() => navigate('/improve')}
-                className="group relative px-8 py-3.5 rounded-xl font-bold text-sm text-white bg-transparent border-2 border-violet-500/60 hover:border-violet-400 hover:bg-violet-500/10 transition-all duration-300 shadow-lg shadow-violet-500/10 hover:shadow-violet-500/25 active:scale-95"
+                className="group relative px-9 py-4 rounded-xl font-bold text-base text-white bg-transparent border-2 border-violet-500/70 hover:border-violet-400 hover:bg-violet-500/15 transition-all duration-300 shadow-xl shadow-violet-500/15 hover:shadow-violet-500/30 active:scale-95"
               >
                 <span className="relative z-10 tracking-wide">Get Started</span>
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-600/25 to-indigo-600/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </button>
             </motion.div>
           </motion.div>
 
-          {/* Right: Penguin Mascot (2 cols) */}
+          {/* Right: Penguin Mascot (5 cols) */}
           <motion.div
-            initial={{ opacity: 0, x: 40, scale: 0.9 }}
+            initial={{ opacity: 0, x: 30, scale: 0.95 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-            className="lg:col-span-2 flex justify-center lg:justify-end relative"
+            className="lg:col-span-5 flex justify-center lg:justify-center relative mt-6 lg:mt-0"
           >
             {/* Sparkles around penguin */}
-            <Sparkle className="absolute -top-2 right-[20%] text-white/80" size={18} delay={0.3} />
-            <Sparkle className="absolute top-[15%] -right-4 text-cyan-300/60" size={12} delay={0.8} />
-            <Sparkle className="absolute bottom-[25%] right-[85%] text-violet-300/50" size={16} delay={1.5} />
+            <Sparkle className="absolute -top-4 right-[15%] text-white/90" size={22} delay={0.3} />
+            <Sparkle className="absolute top-[20%] -right-2 text-cyan-300/70" size={16} delay={0.8} />
+            <Sparkle className="absolute bottom-[20%] right-[80%] text-violet-300/60" size={20} delay={1.5} />
 
             {/* Penguin circle frame */}
-            <div className="relative w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] lg:w-[360px] lg:h-[360px]">
+            <div className="relative w-[300px] h-[300px] sm:w-[380px] sm:h-[380px] lg:w-[440px] lg:h-[440px] xl:w-[480px] xl:h-[480px]">
               {/* Outer glow ring */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-700/40 via-slate-800/60 to-slate-900/80 border border-white/10 shadow-2xl shadow-violet-950/30" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-slate-700/50 via-slate-800/70 to-slate-900/90 border border-white/15 shadow-2xl shadow-violet-950/40" />
               {/* Penguin image */}
               <img
                 src="/images/penguin_mascot.png"
                 alt="PromptMentor Penguin Mascot"
                 className="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] object-contain rounded-full drop-shadow-2xl"
                 onError={(e) => {
-                  // Fallback to emoji if image is missing
                   e.target.style.display = 'none';
                   e.target.parentElement.querySelector('.fallback-emoji').style.display = 'flex';
                 }}
