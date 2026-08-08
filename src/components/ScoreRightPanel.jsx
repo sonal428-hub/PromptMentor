@@ -164,7 +164,7 @@ export default function ScoreRightPanel({
               </h3>
               <p className="text-xs text-gray-300 leading-relaxed italic line-clamp-2">
                 {isPromptEmpty || !isSubmitted ? (
-                  'Click the submit arrow button below to calculate your AI Quality Score.'
+                  'Start typing your prompt below — AI Quality Score calculates automatically.'
                 ) : isAiScoreLoading ? (
                   <span className="text-violet-300 animate-pulse">Evaluating prompt structure with Gemini AI...</span>
                 ) : (

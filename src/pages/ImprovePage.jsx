@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Award, Sparkles, CheckCircle2, XCircle, FileText, ArrowRight, Zap } from 'lucide-react';
 import ScoreRightPanel from '../components/ScoreRightPanel';
 import PromptModal from '../components/PromptModal';
 import PresetPrompts from '../components/PresetPrompts';
 import { PromptInputBox } from '../components/ui/ai-prompt-box';
 import { analyzePrompt, PROMPT_PILLARS } from '../utils/promptAnalyzer';
-import { evaluateAiScore } from '../utils/geminiApi';
+import { evaluateAiScore, comparePromptOutputs } from '../utils/geminiApi';
 
 export default function ImprovePage({
   userPrompt,
@@ -27,8 +27,16 @@ export default function ImprovePage({
   const [isAiScoreLoading, setIsAiScoreLoading] = useState(false);
   const [aiScoreError, setAiScoreError] = useState('');
 
+  // Local comparison state (self-contained, not dependent on App.jsx's coaxResult)
+  const [localComparisonResult, setLocalComparisonResult] = useState(null);
+  const [isLocalComparing, setIsLocalComparing] = useState(false);
+  const [localCompareError, setLocalCompareError] = useState('');
+
   // Modal dialog states: 'suggested' | 'evaluation' | null
   const [modalType, setModalType] = useState(null);
+
+  // Ref to track the latest debounced request and ignore stale ones
+  const aiScoreRequestId = useRef(0);
 
   // Real-time client-side heuristic evaluation on every keystroke
   const heuristic = analyzePrompt(userPrompt);
@@ -57,27 +65,82 @@ export default function ImprovePage({
     return `To improve quality, consider specifying ${missing.map(p => p.title).join(' and ')}.`;
   })();
 
-  // Reset AI score state when prompt text is edited prior to submit
+  // Debounced AI Score: fires 2s after the user stops typing
+  useEffect(() => {
+    const trimmed = userPrompt.trim();
+    if (!trimmed) {
+      setAiScoreResult(null);
+      setAiScoreError('');
+      setIsAiScoreLoading(false);
+      return;
+    }
+
+    // Increment request ID so any in-flight call becomes stale
+    const currentRequestId = ++aiScoreRequestId.current;
+    setAiScoreError('');
+
+    const timer = setTimeout(async () => {
+      // Only set loading when the API call actually fires (not on every keystroke,
+      // because isLoading disables the textarea in PromptInputBox)
+      if (aiScoreRequestId.current === currentRequestId) {
+        setIsAiScoreLoading(true);
+      }
+      try {
+        const res = await evaluateAiScore(trimmed, apiKey);
+        // Only apply result if this is still the latest request
+        if (aiScoreRequestId.current === currentRequestId) {
+          setAiScoreResult(res);
+        }
+      } catch (err) {
+        if (aiScoreRequestId.current === currentRequestId) {
+          setAiScoreError(err.message || 'AI Score calculation failed');
+        }
+      } finally {
+        if (aiScoreRequestId.current === currentRequestId) {
+          setIsAiScoreLoading(false);
+        }
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [userPrompt, apiKey]);
+
+  // Pass-through for prompt text changes (no clearing of aiScoreResult — debounce handles it)
   const handleUserPromptChange = (newVal) => {
     setUserPrompt(newVal);
-    setAiScoreResult(null);
   };
 
-  // Evaluate AI Score ONLY when the user explicitly clicks submit/send
+  // Submit/send button handler — triggers the coax/coach flow only (AI Score is debounced separately)
   const handlePromptSubmit = async (submittedText) => {
     const textToEvaluate = submittedText || userPrompt;
     if (!textToEvaluate || !textToEvaluate.trim()) return;
+    if (onCoax) onCoax();
+  };
 
-    setIsAiScoreLoading(true);
-    setAiScoreError('');
+  // Local comparison handler — uses userPrompt + aiScoreResult.finalPrompt directly
+  const handleLocalCompare = async () => {
+    const original = userPrompt?.trim();
+    const refined = aiScoreResult?.finalPrompt;
+    if (!original) {
+      setLocalCompareError('Type a prompt first so there\'s something to compare.');
+      return;
+    }
+    if (!refined) {
+      setLocalCompareError('Wait for the AI Score to finish evaluating — it generates the refined prompt needed for comparison.');
+      return;
+    }
+
+    setIsLocalComparing(true);
+    setLocalCompareError('');
+    setLocalComparisonResult(null);
     try {
-      const res = await evaluateAiScore(textToEvaluate, apiKey);
-      setAiScoreResult(res);
-      if (onCoax) onCoax();
+      const res = await comparePromptOutputs(original, refined, apiKey);
+      setLocalComparisonResult(res);
     } catch (err) {
-      setAiScoreError(err.message || 'AI Score calculation failed');
+      setLocalCompareError(err.message || 'Something went wrong generating the comparison — please try again.');
+      console.error('Compare API call failed:', err);
     } finally {
-      setIsAiScoreLoading(false);
+      setIsLocalComparing(false);
     }
   };
 
@@ -105,9 +168,10 @@ export default function ImprovePage({
     }
     if (modalType === 'compare') {
       return {
-        comparisonResult,
-        isComparing,
-        onCompare
+        comparisonResult: localComparisonResult,
+        isComparing: isLocalComparing,
+        compareError: localCompareError,
+        onCompare: handleLocalCompare
       };
     }
     return null;
@@ -197,10 +261,10 @@ export default function ImprovePage({
                 userPrompt={userPrompt}
                 coaxResult={coaxResult}
                 isCoaxing={isCoaxing}
-                comparisonResult={comparisonResult}
-                isComparing={isComparing}
-                compareError={compareError}
-                onCompare={onCompare}
+                comparisonResult={localComparisonResult}
+                isComparing={isLocalComparing}
+                compareError={localCompareError}
+                onCompare={handleLocalCompare}
                 aiScoreResult={aiScoreResult}
                 isAiScoreLoading={isAiScoreLoading}
                 aiScoreError={aiScoreError}
@@ -218,7 +282,7 @@ export default function ImprovePage({
               onValueChange={handleUserPromptChange}
               onSend={(text) => handlePromptSubmit(text)}
               isLoading={isAiScoreLoading || isCoaxing}
-              placeholder="Type or paste your prompt here and click the arrow button to evaluate..."
+              placeholder="Type or paste your prompt here — AI Score updates automatically as you type..."
               className="w-full max-w-none shadow-xl shadow-violet-950/40"
             />
           </div>

@@ -154,16 +154,16 @@ export default function PromptModal({ isOpen, onClose, type, data, userPrompt, o
                   {/* Original Output */}
                   <div className="p-4 rounded-2xl bg-slate-950/90 border border-white/10 space-y-2">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Original Prompt Output</span>
-                    <div className="text-xs text-slate-300 font-mono leading-relaxed max-h-[220px] overflow-y-auto p-3 rounded-xl bg-slate-900/80 border border-white/5 whitespace-pre-wrap">
-                      {data.comparisonResult.originalOutput || 'No output generated.'}
+                    <div className="prose prose-invert prose-xs text-slate-300 leading-relaxed max-h-[220px] overflow-y-auto p-3 rounded-xl bg-slate-900/80 border border-white/5">
+                      <ReactMarkdown>{data.comparisonResult.originalOutput || 'No output generated.'}</ReactMarkdown>
                     </div>
                   </div>
 
                   {/* Refined Output */}
                   <div className="p-4 rounded-2xl bg-slate-950/90 border border-violet-500/30 space-y-2">
                     <span className="text-xs font-bold text-violet-300 uppercase tracking-wider">Refined Prompt Output</span>
-                    <div className="text-xs text-slate-200 font-mono leading-relaxed max-h-[220px] overflow-y-auto p-3 rounded-xl bg-slate-900/80 border border-violet-500/20 whitespace-pre-wrap">
-                      {data.comparisonResult.improvedOutput || 'No output generated.'}
+                    <div className="prose prose-invert prose-xs text-slate-200 leading-relaxed max-h-[220px] overflow-y-auto p-3 rounded-xl bg-slate-900/80 border border-violet-500/20">
+                      <ReactMarkdown>{data.comparisonResult.finalOutput || 'No output generated.'}</ReactMarkdown>
                     </div>
                   </div>
                 </div>
@@ -180,13 +180,27 @@ export default function PromptModal({ isOpen, onClose, type, data, userPrompt, o
               </div>
             ) : (
               <div className="p-6 text-center space-y-3 bg-slate-950/80 rounded-2xl border border-white/10">
-                <p className="text-xs text-gray-400">Click "Run Comparison" to generate side-by-side outputs.</p>
-                <button
-                  onClick={data.onCompare}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-lg shadow-violet-500/30"
-                >
-                  Run Comparison Now
-                </button>
+                {data.compareError ? (
+                  <>
+                    <p className="text-xs text-rose-300">{data.compareError}</p>
+                    <button
+                      onClick={data.onCompare}
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-lg shadow-violet-500/30"
+                    >
+                      Try Again
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray-400">Click "Run Comparison" to generate side-by-side outputs.</p>
+                    <button
+                      onClick={data.onCompare}
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-lg shadow-violet-500/30"
+                    >
+                      Run Comparison Now
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>

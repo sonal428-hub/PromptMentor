@@ -134,8 +134,10 @@ ${userPrompt}
       jsonStr = jsonStr.trim();
 
       const parsed = JSON.parse(jsonStr);
+      const scoreVal = typeof parsed.score === 'number' ? Math.min(100, Math.max(0, Math.round(parsed.score))) : 25;
+      recordPromptScore(scoreVal);
       return {
-        score: typeof parsed.score === 'number' ? Math.min(100, Math.max(0, Math.round(parsed.score))) : 25,
+        score: scoreVal,
         explanation: typeof parsed.explanation === 'string'
           ? parsed.explanation
           : `Your prompt needs more specific details about your goal and desired output layout to give precise results.`,
@@ -149,8 +151,10 @@ ${userPrompt}
   }
 
   // Topic-aware personalized fallback if API key is not active
+  const fallbackScore = calculateFallbackScore(userPrompt);
+  recordPromptScore(fallbackScore);
   return {
-    score: calculateFallbackScore(userPrompt),
+    score: fallbackScore,
     explanation: generateFallbackExplanation(userPrompt),
     finalPrompt: generateCleanRewriteFallback(userPrompt)
   };

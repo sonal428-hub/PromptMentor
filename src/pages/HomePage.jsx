@@ -29,8 +29,8 @@ export default function HomePage() {
       description: "Master prompt engineering fundamentals through step-by-step interactive flashcards, progressive disclosure cards, and real-world prompt examples."
     },
     {
-      title: "Leaderboard",
-      href: "/leaderboard",
+        title: "Develop",
+      href: "/develop",
       imgSrc: "/images/card_leaderboard.png",
       imgAlt: "3D metallic gold trophy cup",
       variant: "gray",
@@ -109,58 +109,44 @@ export default function HomePage() {
             variants={itemVariants}
             className="text-slate-300 text-base sm:text-xl font-normal leading-relaxed max-w-2xl font-sans tracking-wide opacity-90"
           >
-            PromptMentor teaches specificity, context, constraints, and roles in real time leaving you skilled at prompt engineering on your own over time.
-          </motion.p>
+PromptMentor teaches you to ask AI better questions , one prompt at a time.     </motion.p>
 
           <motion.div variants={itemVariants} className="pt-4">
             <GetStartedButton onClick={() => navigate('/improve')} />
           </motion.div>
         </motion.div>
 
-        {/* 4 Main Service Cards Grid with Smooth Scroll Reveal */}
+        {/* 4 Main Service Cards Grid */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2"
         >
-          {services.map((service, idx) => (
-            <motion.div
+          {services.map((service) => (
+            <ServiceCard
               key={service.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: idx * 0.1, ease: "easeOut" }}
-            >
-              <ServiceCard
-                title={service.title}
-                href={service.href}
-                imgSrc={service.imgSrc}
-                imgAlt={service.imgAlt}
-                variant={service.variant}
-                badge={service.badge}
-                description={service.description}
-                onClick={() => navigate(service.href)}
-                className="min-h-[200px]"
-              />
-            </motion.div>
+              title={service.title}
+              href={service.href}
+              imgSrc={service.imgSrc}
+              imgAlt={service.imgAlt}
+              variant={service.variant}
+              badge={service.badge}
+              description={service.description}
+              onClick={() => navigate(service.href)}
+              className="min-h-[200px]"
+            />
           ))}
         </motion.div>
 
-        {/* Highlights / Features Banner with Smooth Scroll Reveal */}
+        {/* Highlights / Features Banner */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-20px" }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
           className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-white/10"
         >
-          <motion.div
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-violet-500/30 transition-all shadow-lg hover:shadow-violet-500/10"
-          >
+          <div className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-violet-500/30 transition-all">
             <div className="flex items-center gap-2 text-violet-400 font-bold text-xs uppercase tracking-wider">
               <Award className="w-4 h-4" />
               AI Score (0–100)
@@ -168,13 +154,9 @@ export default function HomePage() {
             <p className="text-xs text-gray-400 leading-relaxed">
               Real-time score judged by Gemini AI across persona, context, specificity, and constraints.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-emerald-500/30 transition-all shadow-lg hover:shadow-emerald-500/10"
-          >
+          <div className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-emerald-500/30 transition-all">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
               <Zap className="w-4 h-4" />
               Dual LLM Output Compare
@@ -182,13 +164,9 @@ export default function HomePage() {
             <p className="text-xs text-gray-400 leading-relaxed">
               Run original vs refined prompts simultaneously and get an AI comparison of quality differences.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            whileHover={{ y: -4 }}
-            transition={{ duration: 0.2 }}
-            className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-indigo-500/30 transition-all shadow-lg hover:shadow-indigo-500/10"
-          >
+          <div className="p-5 rounded-2xl bg-slate-900/40 backdrop-blur-md border border-white/5 space-y-2 hover:border-indigo-500/30 transition-all">
             <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
               <Layers className="w-4 h-4" />
               Resizable Split View
@@ -196,7 +174,7 @@ export default function HomePage() {
             <p className="text-xs text-gray-400 leading-relaxed">
               Draggable divider handle between coach panel and score panel for custom workspace layout.
             </p>
-          </motion.div>
+          </div>
         </motion.div>
 
       </div>
