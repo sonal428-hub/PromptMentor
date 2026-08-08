@@ -140,6 +140,7 @@
         <div class="pm-hover-sub">Right-click or click icon for full score breakdown</div>
       </div>
     `;
+    setupDragging(fab);
 
     const hoverCard = fab.querySelector('.pm-fab-hover-card');
     const quickBtn = fab.querySelector('#pm-quick-overwrite-btn');
