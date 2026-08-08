@@ -124,7 +124,7 @@
     fab.innerHTML = `
       <div class="pm-fab-inner">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          <path d="M9 21h6"/><path d="M10 21a1 1 0 0 1-1-1v-1h6v1a1 1 0 0 1-1 1"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>
         </svg>
         <span class="pm-fab-badge"></span>
       </div>
@@ -305,7 +305,7 @@
     p.innerHTML = `
       <div class="pm-panel-header">
         <div class="pm-panel-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M10 21a1 1 0 0 1-1-1v-1h6v1a1 1 0 0 1-1 1"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
           <span>PromptMentor</span>
         </div>
         <button class="pm-close-btn" id="pm-close">&times;</button>
@@ -333,7 +333,7 @@
     p.innerHTML = `
       <div class="pm-panel-header">
         <div class="pm-panel-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M10 21a1 1 0 0 1-1-1v-1h6v1a1 1 0 0 1-1 1"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
           <span>PromptMentor</span>
         </div>
         <button class="pm-close-btn" id="pm-close">&times;</button>
@@ -389,7 +389,7 @@
     p.innerHTML = `
       <div class="pm-panel-header">
         <div class="pm-panel-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6"/><path d="M10 21a1 1 0 0 1-1-1v-1h6v1a1 1 0 0 1-1 1"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
           <span>PromptMentor</span>
         </div>
         <button class="pm-close-btn" id="pm-close">&times;</button>
