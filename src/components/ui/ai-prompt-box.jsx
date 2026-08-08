@@ -526,16 +526,15 @@ export const PromptInputBox = forwardRef((props, ref) => {
           />
         </div>
 
-        <PromptInputActions className="flex items-center justify-end p-0 pt-2 border-t border-white/5">
+        <PromptInputActions className="flex items-center justify-end pt-1">
           <PromptInputAction tooltip={isLoading ? "Evaluating prompt..." : "Evaluate & Submit Prompt"}>
-            <Button
-              variant="default"
-              size="icon"
+            <button
+              type="button"
               className={cn(
-                "h-9 w-9 rounded-full transition-all duration-200 shadow-md",
+                "h-9 w-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-md focus:outline-none",
                 hasContent
-                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-violet-500/30"
-                  : "bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-gray-200"
+                  ? "bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-violet-500/40 scale-105 active:scale-95"
+                  : "bg-violet-600/80 hover:bg-violet-500 text-white shadow-violet-600/20 opacity-90"
               )}
               onClick={handleSubmit}
               disabled={isLoading || !hasContent}
@@ -543,9 +542,9 @@ export const PromptInputBox = forwardRef((props, ref) => {
               {isLoading ? (
                 <Square className="h-4 w-4 fill-white animate-pulse" />
               ) : (
-                <ArrowUp className="h-4.5 w-4.5 text-white" />
+                <ArrowUp className="h-5 w-5 text-white stroke-[2.5]" />
               )}
-            </Button>
+            </button>
           </PromptInputAction>
         </PromptInputActions>
       </PromptInput>
